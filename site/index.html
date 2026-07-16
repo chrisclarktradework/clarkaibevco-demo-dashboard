@@ -1034,7 +1034,7 @@ function buildEnh(plan, jira){
  /* ---- Critical Path tab (additive) ---- */
  (function(){
   var host=document.getElementById('x-critpath'); if(!host) return;
-  var CP=['D1','D3','D4','D9','D12'];
+  var CRIT={D1:1,D3:1,D4:1,D9:1,D12:1};
   var day=86400000;
   var GATE=new Date((window.__CRITGATE||'2026-07-28')+'T00:00:00');
   var GLABEL=window.__CRITGATELABEL||'P0-SG1';
@@ -1045,69 +1045,78 @@ function buildEnh(plan, jira){
   function parseDue(s){ if(!s) return null; var p=String(s).trim().split(/\s+/); if(p.length<2) return null; var d=+p[0], m=MON[p[1].slice(0,3)]; if(m==null||!d) return null; return new Date(2026,m,d); }
   var DUE={};
   (typeof REF!=='undefined'&&REF.deliverables||[]).forEach(function(r){ var d=topD(r[0]); var dt=parseDue(r[4]); if(dt){ if(!DUE[d]||dt>DUE[d]) DUE[d]=dt; } });
+  var seen={},ORDER=[];
+  (typeof REF!=='undefined'&&REF.deliverables||[]).forEach(function(r){ var d=topD(r[0]); if(!seen[d]){seen[d]=1;ORDER.push(d);} });
+  ORDER.sort(function(a,b){return (+a.slice(1))-(+b.slice(1));});
+  function pill(txt,col){return '<span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:'+col+'22;color:'+col+';border:1px solid '+col+'55;white-space:nowrap">'+txt+'</span>';}
   function bark(pct,col){return '<div style="height:9px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:'+col+'"></i></div>';}
-  function chip(rag,col){return '<span style="display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;background:'+col+'22;color:'+col+';border:1px solid '+col+'">'+String(rag).toUpperCase()+'</span>';}
-  var rows=CP.map(function(d){
+  var rows=ORDER.map(function(d){
     var a=A[d]||{}; var t=(a.ssT||0)+(a.jT||0), dn=(a.ssD||0)+(a.jD||0);
     var pct=pctOf(dn,t); var rag=ragOf(a); var over=(a.ssOver||0)+(a.jOver||0);
-    var due=DUE[d]||null;
-    return {d:d,name:NM[d]||'',owner:ownerName(d),t:t,dn:dn,pct:pct,rag:rag,col:RC[rag]||'#7385a0',over:over,due:due,dueISO:due?iso(due):null};
+    var due=DUE[d]||null; var dtd=due?db(today,due):null;
+    var slack=due?db(due,GATE):null;
+    var state,scol;
+    if(pct>=100){state='done';scol='#2f7d32';}
+    else if(dtd!==null&&dtd<0){state=(-dtd)+'d late';scol='#b3261e';}
+    else if(rag==='Red'||rag==='Amber'){state='behind';scol='#2E7FC4';}
+    else if(dtd!==null){state=dtd+'d left';scol='#2f7d32';}
+    else {state='planned';scol='#7385a0';}
+    return {d:d,name:NM[d]||'',owner:ownerName(d),t:t,dn:dn,pct:pct,rag:rag,col:RC[rag]||'#7385a0',over:over,due:due,dueISO:due?iso(due):null,dtd:dtd,slack:slack,crit:!!CRIT[d],state:state,scol:scol};
   });
-  // ----- Visual 1: flow -----
-  var flow='<div style="display:flex;align-items:stretch;overflow-x:auto;padding:6px 2px">';
-  rows.forEach(function(r,i){
-    flow+='<div style="min-width:150px;flex:1;background:var(--bg-panel);border:1px solid var(--border-lt);border-top:3px solid '+r.col+';border-radius:8px;padding:9px 11px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-family:Georgia,serif;color:var(--cream)">'+r.d+'</b><span style="width:9px;height:9px;border-radius:50%;background:'+r.col+';display:inline-block"></span></div>'
-      +'<div style="font-size:11px;color:var(--text-muted);margin:3px 0;min-height:30px;line-height:1.3">'+esc(r.name).slice(0,64)+'</div>'
-      +'<div style="margin:5px 0">'+bark(r.pct,r.col)+'</div>'
-      +'<div style="font-size:10.5px;color:var(--text-dim)">'+r.pct+'% &middot; '+r.dn+'/'+r.t+' &middot; due '+(r.due?hdate(r.dueISO):'&mdash;')+'</div></div>';
-    flow+='<div style="display:flex;align-items:center;color:var(--gold-br);font-size:20px;padding:0 5px">&rarr;</div>';
+  // ----- Visual 1: all deliverables grid, critical highlighted -----
+  var grid='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:9px">';
+  rows.forEach(function(r){
+    var bt=r.crit?('3px solid '+r.col):'1px solid var(--border-lt)';
+    var op=r.crit?'1':'0.72';
+    grid+='<div style="background:var(--bg-panel);border:1px solid var(--border-lt);border-top:'+bt+';border-radius:7px;padding:8px 10px;opacity:'+op+'">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center"><b style="font-family:Georgia,serif;color:var(--cream)">'+r.d+'</b>'
+      +(r.crit?'<span style="font-size:8.5px;letter-spacing:.08em;color:'+r.col+';font-weight:700">CRITICAL</span>':'<span style="width:8px;height:8px;border-radius:50%;background:'+r.col+';display:inline-block"></span>')+'</div>'
+      +'<div style="font-size:10.5px;color:var(--text-muted);margin:2px 0 4px;min-height:26px;line-height:1.25">'+esc(r.name).slice(0,52)+'</div>'
+      +bark(r.pct,r.col)
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:5px"><span style="font-size:10px;color:var(--text-dim)">'+r.pct+'% &middot; due '+(r.due?hdate(r.dueISO):'&mdash;')+'</span>'+pill(r.state,r.scol)+'</div></div>';
   });
-  flow+='<div style="min-width:130px;background:linear-gradient(135deg,#1c5a94,#6b4628);color:#fff;border-radius:8px;padding:9px 11px;display:flex;flex-direction:column;justify-content:center">'
-    +'<b style="font-family:Georgia,serif">'+GLABEL+'</b><div style="font-size:11px;opacity:.85;margin-top:2px">Critical gate</div><div style="font-size:11px;margin-top:3px">'+hdate((window.__CRITGATE||'2026-07-28'))+'</div></div>';
-  flow+='</div>';
-  // ----- Visual 2: gantt -----
+  grid+='</div>';
+  // ----- Visual 2: gantt, all deliverables, critical highlighted -----
   var dues=rows.filter(function(r){return r.due;}).map(function(r){return r.due.getTime();});
-  var lo=Math.min.apply(null,dues.concat([today.getTime()-21*day]));
+  var lo=Math.min.apply(null,dues.concat([today.getTime()-14*day]));
   var hi=Math.max.apply(null,dues.concat([GATE.getTime(),today.getTime()+7*day]));
   var axisStart=new Date(lo), axisEnd=new Date(hi); var span=Math.max(1,db(axisStart,axisEnd));
-  var W=900,rowH=30,padL=44,padR=52,topP=26,H=topP+rows.length*rowH+34;
+  var W=920,rowH=25,padL=52,padR=56,topP=26,H=topP+rows.length*rowH+34;
   function X(dt){return padL+db(axisStart,dt)/span*(W-padL-padR);}
   var g='<svg width="100%" viewBox="0 0 '+W+' '+H+'" style="font-family:inherit">';
   for(var k=0;k<=5;k++){var dt=new Date(axisStart.getTime()+k*(axisEnd-axisStart)/5);var x=X(dt);
     g+='<line x1="'+x.toFixed(1)+'" y1="'+topP+'" x2="'+x.toFixed(1)+'" y2="'+(H-22)+'" stroke="var(--border-lt)" stroke-width="1"/>'
       +'<text x="'+x.toFixed(1)+'" y="'+(H-7)+'" font-size="9" fill="var(--text-dim)" text-anchor="middle">'+hdate(iso(dt))+'</text>';}
-  rows.forEach(function(r,i){var y=topP+i*rowH+7; var x0=X(axisStart); var x1=r.due?X(r.due):X(GATE);
-    g+='<text x="6" y="'+(y+11)+'" font-size="11" fill="var(--cream)" font-weight="700">'+r.d+'</text>'
-      +'<rect x="'+x0.toFixed(1)+'" y="'+y+'" width="'+Math.max(4,x1-x0).toFixed(1)+'" height="15" rx="4" fill="var(--bg-surface)" stroke="'+r.col+'" stroke-width="1"/>'
-      +'<rect x="'+x0.toFixed(1)+'" y="'+y+'" width="'+Math.max(2,(x1-x0)*r.pct/100).toFixed(1)+'" height="15" rx="4" fill="'+r.col+'"/>'
-      +'<text x="'+(x1+5).toFixed(1)+'" y="'+(y+12)+'" font-size="10" fill="var(--text-dim)">'+r.pct+'%</text>';});
+  rows.forEach(function(r,i){var y=topP+i*rowH+6; var x0=X(axisStart); var x1=r.due?X(r.due):X(GATE);
+    var op=r.crit?1:0.4; var lw=r.crit?1.4:0.8;
+    g+='<text x="6" y="'+(y+11)+'" font-size="10.5" fill="'+(r.crit?'var(--cream)':'var(--text-dim)')+'" font-weight="'+(r.crit?'700':'400')+'">'+r.d+'</text>'
+      +'<rect x="'+x0.toFixed(1)+'" y="'+y+'" width="'+Math.max(4,x1-x0).toFixed(1)+'" height="13" rx="3" fill="var(--bg-surface)" stroke="'+r.col+'" stroke-width="'+lw+'" stroke-opacity="'+op+'"/>'
+      +'<rect x="'+x0.toFixed(1)+'" y="'+y+'" width="'+Math.max(2,(x1-x0)*r.pct/100).toFixed(1)+'" height="13" rx="3" fill="'+r.col+'" fill-opacity="'+op+'"/>'
+      +(r.dtd!==null&&r.dtd<0&&r.pct<100?'<circle cx="'+x1.toFixed(1)+'" cy="'+(y+6.5)+'" r="3" fill="#b3261e"/>':'')
+      +'<text x="'+(x1+6).toFixed(1)+'" y="'+(y+11)+'" font-size="9" fill="var(--text-dim)">'+r.pct+'%</text>';});
   var xt=X(today); g+='<line x1="'+xt.toFixed(1)+'" y1="'+topP+'" x2="'+xt.toFixed(1)+'" y2="'+(H-22)+'" stroke="#1E6FE0" stroke-width="1.5" stroke-dasharray="3,2"/><text x="'+xt.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#1E6FE0" text-anchor="middle">today</text>';
   var xg=X(GATE); g+='<line x1="'+xg.toFixed(1)+'" y1="'+topP+'" x2="'+xg.toFixed(1)+'" y2="'+(H-22)+'" stroke="#C0392B" stroke-width="1.5"/><text x="'+xg.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#C0392B" text-anchor="middle">'+GLABEL+'</text>';
   g+='</svg>';
-  // ----- Visual 3: slack table -----
-  var tb='<table><thead><tr><th>Deliverable</th><th>Owner</th><th style="width:140px">% Complete</th><th style="text-align:center">Done/Total</th><th style="text-align:center">Due</th><th style="text-align:center">Days to due</th><th style="text-align:center">Slack to gate</th><th style="text-align:center">RAG</th><th style="text-align:center">At risk</th></tr></thead><tbody>';
+  // ----- Visual 3: table, all deliverables, critical flagged -----
+  var tb='<table><thead><tr><th>Deliverable</th><th style="text-align:center">Critical</th><th>Owner</th><th style="width:120px">% Complete</th><th style="text-align:center">Done/Total</th><th style="text-align:center">Due</th><th style="text-align:center">Late / behind</th><th style="text-align:center">Slack to gate</th><th style="text-align:center">RAG</th></tr></thead><tbody>';
   rows.forEach(function(r){
-    var slack=r.due?db(r.due,GATE):null;
-    var dtd=r.due?db(today,r.due):null;
-    var atrisk=(r.over>0)||(dtd!==null&&dtd<0&&r.pct<100)||(r.pct<60&&dtd!==null&&dtd<=7);
-    tb+='<tr><td><b style="color:var(--cream)">'+r.d+'</b> '+esc(r.name).slice(0,46)+'</td>'
+    var rowbg=r.crit?'background:rgba(46,127,196,.10)':'';
+    tb+='<tr style="'+rowbg+'"><td><b style="color:var(--cream)">'+r.d+'</b> '+esc(r.name).slice(0,42)+'</td>'
+      +'<td style="text-align:center">'+(r.crit?'<span style="color:var(--gold-br);font-weight:700">&#9670;</span>':'<span style="color:var(--text-dim)">&middot;</span>')+'</td>'
       +'<td>'+ownerChip(r.owner)+'</td>'
       +'<td>'+bark(r.pct,r.col)+'</td>'
       +'<td style="text-align:center">'+r.dn+'/'+r.t+'</td>'
       +'<td style="text-align:center;white-space:nowrap">'+(r.due?hdate(r.dueISO):'&mdash;')+'</td>'
-      +'<td style="text-align:center;white-space:nowrap;color:'+((dtd!==null&&dtd<0&&r.pct<100)?'#b3261e':'var(--text-muted)')+'">'+(r.pct>=100?'done':(dtd===null?'&mdash;':(dtd>=0?dtd+'d left':(-dtd)+'d late')))+'</td>'
-      +'<td style="text-align:center;white-space:nowrap;color:'+((slack!==null&&slack<0)?'#b3261e':'var(--text-muted)')+'">'+(slack===null?'&mdash;':(slack>=0?'+'+slack+'d':slack+'d'))+'</td>'
-      +'<td style="text-align:center">'+chip(r.rag,r.col)+'</td>'
-      +'<td style="text-align:center">'+(atrisk?'<span style="color:#b3261e;font-weight:700">&#9650; YES</span>':'<span style="color:#2f7d32;font-weight:700">&#10003;</span>')+'</td></tr>';
+      +'<td style="text-align:center">'+pill(r.state,r.scol)+'</td>'
+      +'<td style="text-align:center;white-space:nowrap;color:'+((r.slack!==null&&r.slack<0)?'#b3261e':'var(--text-muted)')+'">'+(r.slack===null?'&mdash;':(r.slack>=0?'+'+r.slack+'d':r.slack+'d'))+'</td>'
+      +'<td style="text-align:center">'+pill(r.rag,r.col)+'</td></tr>';
   });
   tb+='</tbody></table>';
-  host.innerHTML='<div class="panel"><h2>Critical Path &mdash; Flow</h2><div class="sub">The five critical deliverables to '+GLABEL+', in sequence</div>'+flow+'</div>'
-    +'<div class="panel" style="margin-top:14px"><h2>Critical Path &mdash; Timeline</h2><div class="sub">Runway and percent complete against each committed due date &middot; blue = today &middot; red = '+GLABEL+' gate</div>'+g+'</div>'
-    +'<div class="panel" style="margin-top:14px"><h2>Critical Path &mdash; Slack and Risk</h2><div class="sub">Committed due, days remaining, float to the gate and at-risk flags</div>'+tb
-    +'<div class="note">Critical deliverables are D1, D3, D4, D9, D12. Committed due is the target date from the deliverables register. Days to due is calendar days from today to that date. Slack to gate is days between the committed due and the '+GLABEL+' gate. At risk = overdue tasks, or the committed due has passed and the deliverable is not complete, or under 60 percent within a week of the due date.</div></div>';
+  host.innerHTML='<div class="panel"><h2>Deliverables &mdash; All 16, Critical Highlighted</h2><div class="sub">Every deliverable with percent complete, committed due and a late/behind indicator &middot; the five critical (D1, D3, D4, D9, D12) are highlighted</div>'+grid+'</div>'
+    +'<div class="panel" style="margin-top:14px"><h2>Timeline &mdash; All Deliverables</h2><div class="sub">Runway to each committed due date &middot; critical bold, others dimmed &middot; red dot = overdue &middot; blue = today &middot; red line = '+GLABEL+' gate</div>'+g+'</div>'
+    +'<div class="panel" style="margin-top:14px"><h2>Deliverables &mdash; Due, Late/Behind and Slack</h2><div class="sub">All deliverables ranked D1 to D16 &middot; critical rows shaded and flagged &#9670;</div>'+tb
+    +'<div class="note">Late/behind: "Nd late" = committed due passed and not complete; "behind" = amber or red but not yet overdue; "Nd left" = days remaining and on track; "done" = complete. Slack to gate is days between the committed due and the '+GLABEL+' gate. Critical deliverables are D1, D3, D4, D9, D12.</div></div>';
  })();
-
  /* ---- SOW tab (additive) ---- */
  (function(){
   var host=document.getElementById('x-sow'); if(!host) return;
