@@ -6,8 +6,8 @@
 <title>ClarkAI Beverage Co — Robot Fuel Operations Dashboard</title>
 <style>
 :root{color-scheme:light;
- --bg-deep:#F3EAD6;--bg-panel:#FCF8EE;--bg-surface:#E9DEC6;--border-lt:#D8C9A8;
- --text:#2D2015;--text-muted:#5C4A2E;--text-dim:#8A7856;--gold:#A9832C;--gold-br:#7A5E15;--cream:#352513;
+ --bg-deep:#F3EAD6;--bg-panel:#ffffff;--bg-surface:#E9DEC6;--border-lt:#D8C9A8;
+ --text:#2D2015;--text-muted:#5C4A2E;--text-dim:#8A7856;--gold:#2E7FC4;--gold-br:#7A5E15;--cream:#16273c;
  --good:#3E7142;--good-s:#3E7142;--warn:#B07A1E;--warn-s:#9A6B12;--bad:#B33A1B;--bad-br:#A8331A;
  --jira:#1E6FE0;--jira-bg:rgba(38,132,255,0.12);--ss:#2E8B57;--ss-bg:rgba(46,139,87,0.12);}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -70,9 +70,9 @@ td{padding:6px 7px;border-bottom:1px solid rgba(107,89,68,.4)}
 body{font-size:13.5px}
 .panel{box-shadow:0 1px 4px rgba(90,65,30,.10)}
 th{color:#6B5B3A}
-td{color:#352513}
+td{color:#16273c}
 tr:nth-child(even) td{background:rgba(168,131,44,.06)}
-.note{color:#6B5B3A}.kpi-lbl{color:#7A6438}.mini{color:#7A6438}
+.note{color:#6B5B3A}.kpi-lbl{color:#7385a0}.mini{color:#7385a0}
 a{color:#8A6A1E}
 nav.tabs{box-shadow:0 1px 3px rgba(90,65,30,.08)}
 .src{position:absolute;top:11px;right:12px;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:#1E6FE0;background:var(--jira-bg);border:1px solid var(--jira);border-radius:10px;padding:2px 8px;font-weight:700;z-index:2}
@@ -197,7 +197,7 @@ function evmCurve(weeks,pv,ev,ac,eac,bac,nowIdx,w=540,h=250){
  const dots=(arr,col)=>arr.map((v,i)=>v==null?'':`<circle cx="${X(i)}" cy="${Y(v)}" r="3" fill="${col}"/>`).join("");
  let grid="";[0,.25,.5,.75,1].forEach(f=>{const v=max*f;grid+=`<line x1="${pad}" y1="${Y(v)}" x2="${w-12}" y2="${Y(v)}" stroke="#E4D8BF"/><text x="6" y="${Y(v)+3}" fill="#6B5B3A" font-size="8">$${Math.round(v/1000)}k</text>`;});
  let xl="";weeks.forEach((wk,i)=>xl+=`<text x="${X(i)}" y="${h-12}" fill="#6B5B3A" font-size="8" text-anchor="middle">${wk}</text>`);
- const bacL=`<line x1="${pad}" y1="${Y(bac)}" x2="${w-12}" y2="${Y(bac)}" stroke="#D4A853" stroke-width="1.4" stroke-dasharray="3 3"/><text x="${w-14}" y="${Y(bac)-4}" fill="#D4A853" font-size="9" text-anchor="end">BAC $${Math.round(bac/1000)}k</text>`;
+ const bacL=`<line x1="${pad}" y1="${Y(bac)}" x2="${w-12}" y2="${Y(bac)}" stroke="#16273c" stroke-width="1.4" stroke-dasharray="3 3"/><text x="${w-14}" y="${Y(bac)-4}" fill="#16273c" font-size="9" text-anchor="end">BAC $${Math.round(bac/1000)}k</text>`;
  const now=`<line x1="${X(nowIdx)}" y1="${top}" x2="${X(nowIdx)}" y2="${h-30}" stroke="#A7906A" stroke-dasharray="4 4"/><text x="${X(nowIdx)}" y="${top+8}" fill="#6B5B3A" font-size="8" text-anchor="middle">TIME NOW</text>`;
  return `<svg width="100%" viewBox="0 0 ${w} ${h}">${grid}${bacL}${now}${line(pv,'#4F86C6')}${line(ev,'#5FA052')}${line(ac,'#C0392B')}${line(eac,'#9DC3E6',true)}${dots(ev,'#5FA052')}${dots(ac,'#C0392B')}${xl}</svg>`;
 }
@@ -219,7 +219,7 @@ function lineChartV(o){
  const X=i=>padL+i*((w-padL-padR)/Math.max(1,n-1)), Y=v=>h-padB-((v-min)/(max-min))*(h-padB-padT);
  let grid="";for(let k=0;k<=4;k++){const v=min+(max-min)*k/4;grid+=`<line x1="${padL}" y1="${Y(v).toFixed(1)}" x2="${w-padR}" y2="${Y(v).toFixed(1)}" stroke="#E4D8BF"/><text x="${padL-5}" y="${(Y(v)+3).toFixed(1)}" fill="#6B5B3A" font-size="8" text-anchor="end">${gfmt(v)}</text>`;}
  let xl="";o.cats.forEach((c,i)=>xl+=`<text x="${X(i).toFixed(1)}" y="${h-12}" fill="#6B5B3A" font-size="8.5" text-anchor="middle">${c}</text>`);
- let base="";if(o.baseline){const by=Y(o.baseline.v);base=`<line x1="${padL}" y1="${by.toFixed(1)}" x2="${w-padR}" y2="${by.toFixed(1)}" stroke="${o.baseline.color||'#A9832C'}" stroke-width="1.3" stroke-dasharray="4 3"/><text x="${w-padR}" y="${(by-4).toFixed(1)}" fill="${o.baseline.color||'#A9832C'}" font-size="8.5" text-anchor="end">${o.baseline.label}</text>`;}
+ let base="";if(o.baseline){const by=Y(o.baseline.v);base=`<line x1="${padL}" y1="${by.toFixed(1)}" x2="${w-padR}" y2="${by.toFixed(1)}" stroke="${o.baseline.color||'#2E7FC4'}" stroke-width="1.3" stroke-dasharray="4 3"/><text x="${w-padR}" y="${(by-4).toFixed(1)}" fill="${o.baseline.color||'#2E7FC4'}" font-size="8.5" text-anchor="end">${o.baseline.label}</text>`;}
  let body="";
  o.series.forEach(s=>{let d="",on=false;
    if(s.connect){const pts=s.data.map((v,i)=>[i,v]).filter(p=>p[1]!=null);pts.forEach((p,k)=>d+=(k?" L":"M")+X(p[0]).toFixed(1)+" "+Y(p[1]).toFixed(1));}
@@ -230,7 +230,7 @@ function lineChartV(o){
    here.forEach((p,rank)=>{const yy=Y(p.v),ly=rank===0?yy-9:yy+9+rank*11;const tt=p.tip?`<title>${p.tip}</title>`:'';const _k=fmt(p.v);const _dup=_seen[_k];_seen[_k]=1;
      body+=`<circle cx="${X(i).toFixed(1)}" cy="${yy.toFixed(1)}" r="3" fill="${p.col}"/>`+
        `<circle cx="${X(i).toFixed(1)}" cy="${yy.toFixed(1)}" r="11" fill="transparent" style="cursor:help">${tt}</circle>`+
-       (_dup?'':`<text x="${X(i).toFixed(1)}" y="${ly.toFixed(1)}" fill="${p.col}" font-size="9.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#FCF8EE" stroke-width="3" stroke-linejoin="round">${fmt(p.v)}</text>`);});});
+       (_dup?'':`<text x="${X(i).toFixed(1)}" y="${ly.toFixed(1)}" fill="${p.col}" font-size="9.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">${fmt(p.v)}</text>`);});});
  return `<svg width="100%" viewBox="0 0 ${w} ${h}">${grid}${base}${xl}${body}</svg>`;
 }
 /* ---- grouped vertical Budget-vs-Actual bars (per period) with value labels ---- */
@@ -242,7 +242,7 @@ function groupedBarV(cats,series,o){
  let grid="";for(let k=0;k<=4;k++){const v=max*k/4;grid+=`<line x1="${padL}" y1="${Y(v).toFixed(1)}" x2="${w-padR}" y2="${Y(v).toFixed(1)}" stroke="#E4D8BF"/><text x="${padL-5}" y="${(Y(v)+3).toFixed(1)}" fill="#6B5B3A" font-size="8" text-anchor="end">$${Math.round(v/1000)}k</text>`;}
  let bars="";cats.forEach((c,i)=>{const gx=padL+i*gw+(gw-bw*ng-3)/2;
    series.forEach((s,j)=>{const v=s.data[i]||0,x=gx+j*(bw+3),y=Y(v);
-     bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(h-padB-y).toFixed(1)}" fill="${s.color}" rx="1.5"/><text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" fill="${s.color}" font-size="8.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#FCF8EE" stroke-width="2.6" stroke-linejoin="round">$${Math.round(v/1000)}k</text>`;});
+     bars+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${(h-padB-y).toFixed(1)}" fill="${s.color}" rx="1.5"/><text x="${(x+bw/2).toFixed(1)}" y="${(y-4).toFixed(1)}" fill="${s.color}" font-size="8.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="2.6" stroke-linejoin="round">$${Math.round(v/1000)}k</text>`;});
    bars+=`<text x="${(padL+i*gw+gw/2).toFixed(1)}" y="${h-24}" fill="#6B5B3A" font-size="8.5" text-anchor="middle">${c}</text>`;});
  return `<svg width="100%" viewBox="0 0 ${w} ${h}">${grid}${bars}</svg>`;
 }
@@ -295,7 +295,7 @@ function budgetActual(rows,o){
    s+=`<rect x="${(cx-3).toFixed(1)}" y="${top.toFixed(1)}" width="6" height="${Math.max(1,bot-top).toFixed(1)}" fill="${col}" stroke="${fav?'#1F7D3C':'#A8331A'}" stroke-dasharray="2 2" opacity="0.9"/>`;
    const lbl=`${fav?'▲':'▼'} $${Math.abs(Math.round(v/1000))}k (${r.vp>0?'+':''}${r.vp}%)`;
    s+=`<line x1="${cx.toFixed(1)}" y1="${top.toFixed(1)}" x2="${cx.toFixed(1)}" y2="${(padT-4).toFixed(1)}" stroke="${col}" stroke-width="1" stroke-dasharray="3 2"/>`;
-   s+=`<text x="${cx.toFixed(1)}" y="${(padT-8)}" fill="${col}" font-size="10.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#FCF8EE" stroke-width="3" stroke-linejoin="round">${lbl}</text>`;
+   s+=`<text x="${cx.toFixed(1)}" y="${(padT-8)}" fill="${col}" font-size="10.5" font-weight="700" text-anchor="middle" paint-order="stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">${lbl}</text>`;
    s+=`<text x="${cx.toFixed(1)}" y="${(h-20)}" fill="#6B5B3A" font-size="9" text-anchor="middle">${r.c}</text>`;});
  s+=`<rect x="${padL}" y="${h-12}" width="10" height="10" fill="#DDE0E2" stroke="#B4B9BC"/><text x="${padL+15}" y="${h-3}" font-size="9" fill="#6B5B3A">Budget</text>`;
  s+=`<rect x="${padL+78}" y="${h-12}" width="10" height="10" fill="#A6ACB0" stroke="#8A9094"/><text x="${padL+93}" y="${h-3}" font-size="9" fill="#6B5B3A">Actual</text>`;
@@ -308,10 +308,10 @@ function bullet(o){
  const X=v=>padL+(Math.max(0,Math.min(v,max))/max)*(w-padL-padR);
  let s=`<svg width="100%" viewBox="0 0 ${w} ${h}">`;
  (o.bands||[]).forEach(b=>{const x0=X(b.from||0),x1=X(b.to);s+=`<rect x="${x0.toFixed(1)}" y="${barY-3}" width="${Math.max(0,x1-x0).toFixed(1)}" height="${barH+6}" fill="${b.color}" opacity="0.16"/>`;});
- s+=`<rect x="${padL}" y="${barY}" width="${Math.max(0,X(o.value)-padL).toFixed(1)}" height="${barH}" rx="2" fill="${o.color||'#352513'}"/>`;
- if(o.vlab){const vx=X(o.value),end=vx>w*0.74;s+=`<text x="${(end?vx-3:vx).toFixed(1)}" y="${barY-6}" text-anchor="${end?'end':'middle'}" font-size="11.5" font-weight="800" fill="${o.color||'#352513'}" paint-order="stroke" stroke="#FCF8EE" stroke-width="3" stroke-linejoin="round">${o.vlab}</text>`;}
+ s+=`<rect x="${padL}" y="${barY}" width="${Math.max(0,X(o.value)-padL).toFixed(1)}" height="${barH}" rx="2" fill="${o.color||'#16273c'}"/>`;
+ if(o.vlab){const vx=X(o.value),end=vx>w*0.74;s+=`<text x="${(end?vx-3:vx).toFixed(1)}" y="${barY-6}" text-anchor="${end?'end':'middle'}" font-size="11.5" font-weight="800" fill="${o.color||'#16273c'}" paint-order="stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">${o.vlab}</text>`;}
  if(o.target!=null){const tx=X(o.target);s+=`<line x1="${tx.toFixed(1)}" y1="${barY-4}" x2="${tx.toFixed(1)}" y2="${barY+barH+4}" stroke="#2D2015" stroke-width="2.5"/>`;
-   if(o.tlab)s+=`<text x="${tx.toFixed(1)}" y="${barY+barH+15}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2D2015" paint-order="stroke" stroke="#FCF8EE" stroke-width="3" stroke-linejoin="round">${o.tlab}</text>`;}
+   if(o.tlab)s+=`<text x="${tx.toFixed(1)}" y="${barY+barH+15}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2D2015" paint-order="stroke" stroke="#ffffff" stroke-width="3" stroke-linejoin="round">${o.tlab}</text>`;}
  return s+`</svg>`;
 }
 function bulletCard(o){
@@ -493,6 +493,7 @@ function render(bill, risks, plan, jira){
  const overallBand=band(score10);
  const overall= score10>=8?'Green': score10>=4?'Amber':'Red';
  const overallCls=ragCls(overall);
+ window.__RAGSEED={risk:sRisk,comp:sComp,spi:sSPI,cpi:sCPI,vtc:sVTC,deliv:sDeliv,tcpi:sTCPI,combPct:combPct,schedPct:schedPct,schedFrac:schedFrac,compRatio:compRatio,SPI:SPIv,CPI:CPIv,red:openRed,amber:openAmber,ac:ac,bac:BAC_,eac:EACv,score:score10};
  const ragOf=s=>{const c=bandCls(s);return c==='good'?'Green':c==='warn'?'Amber':'Red';};
  const mrow=(l,v)=>`<div class="mrow"><span>${l}</span><b>${v}</b></div>`;
  const stepRows=MEASURES.map(m=>`<div class="mrow"><span><b>${m.k}</b> · wt ${m.w}</span>${bandTag(m.s)}</div><div class="mnote">${m.v}<br>Rule: ${m.rule} · contributes ${(m.w*m.s).toFixed(1)}</div>`).join('');
@@ -540,7 +541,7 @@ function render(bill, risks, plan, jira){
  $("#x-overview").innerHTML=`<div style="margin:0 0 14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(16,35,59,.18);border:1px solid #c2cede"><img src="img/hero-lineup.jpg" alt="ClarkAI Beverage Co master product display" style="width:100%;display:block" loading="eager"></div><div class="panel"><h2>18-Month Program Timeline</h2><div class="sub">18-month Robot Fuel rollout · month 9 of 18 · click any milestone for its summary</div>${timeline()}<div id="weekStrip" style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0">${WEEKS.map((w,i)=>`<button class="wkchip${i===curIdx?' wk-active':''}" data-wk="${i}">${w.wk.replace('Week ','Wk ')}</button>`).join('')}</div><div id="weekSummary" style="margin-top:11px;padding:12px 14px;background:var(--bg-surface);border:1px solid var(--border-lt);border-radius:6px">${weekHTML(curIdx)}</div></div>
  <div class="grid g4 mt">
   <div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Objective RAG · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
-  <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#D4A853',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
+  <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#16273c',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
   <div class="panel good">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Budget${why('budget')}</h2><div class="sub">Fixed price</div><div class="kpi sm">${money(REF.byrnePlannedToDate)}</div><div class="kpi-lbl">ClarkAI cost to date (on plan)</div><div class="note">of ${money(REF.bac)} · ${money(REF.perMonth)}/mo × ${REF.months}. ClarkAI Synthetics effort delivered: ${money(ac)}.</div></div>
   <div class="panel bad">${srcLink(LINKS.ssRisk,'Risk Log','ss')}<h2>Risk${why('riskrag')}</h2><div class="sub">Open register</div><div style="display:flex;gap:14px"><div><div class="kpi sm" style="color:var(--bad-br)">${red}</div><div class="kpi-lbl">Red</div></div><div><div class="kpi sm" style="color:var(--warn)">${amber}</div><div class="kpi-lbl">Amber</div></div><div><div class="kpi sm" style="color:var(--good)">${green}</div><div class="kpi-lbl">Green</div></div></div><div class="note">${severe} at severity 8+.</div></div>
  </div>
@@ -562,14 +563,14 @@ function render(bill, risks, plan, jira){
  $("#x-tasks").innerHTML=`<div class="grid g3">
   <div class="panel">${srcLink(LINKS.jiraIssues,'Jira SPY')}<h2>Jira Tasks</h2><div class="sub">SPY · live</div><div class="donut-wrap">${donut(pct(jira.done,jira.total),'#2684FF',100,'DONE')}<div style="flex:1">${stack([{v:jira.done,color:'#3FA66A'},{v:jira.inprog,color:'#E38B55'},{v:jira.todo,color:'#5A3A24'}])}<div class="legend"><span><i class="sw" style="background:#3FA66A"></i>Done ${jira.done}</span><span><i class="sw" style="background:#E38B55"></i>In Prog ${jira.inprog}</span><span><i class="sw" style="background:#5A3A24"></i>To Do ${jira.todo}</span></div><div class="kpi-lbl mt">${jira.total} issues</div></div></div></div>
   <div class="panel">${srcLink(LINKS.ssPlan,'Plan','ss')}<h2>Smartsheet Plan</h2><div class="sub">01 Project Plan · live</div><div class="donut-wrap">${donut(pct(ssDone,ssTot),'#3FA66A',100,'DONE')}<div style="flex:1">${stack([{v:ssDone,color:'#3FA66A'},{v:ssIp,color:'#E38B55'},{v:ssTot-ssDone-ssIp,color:'#5A3A24'}])}<div class="legend"><span><i class="sw" style="background:#3FA66A"></i>Done ${ssDone}</span><span><i class="sw" style="background:#E38B55"></i>In Prog ${ssIp}</span><span><i class="sw" style="background:#5A3A24"></i>To Do ${ssTot-ssDone-ssIp}</span></div><div class="kpi-lbl mt">${ssTot} tasks</div></div></div></div>
-  <div class="panel"><h2>Combined</h2><div class="sub">All tasks</div><div class="donut-wrap">${donut(combPct,'#D4A853',100,'DONE')}<div><div class="kpi sm">${totDone}/${totTasks}</div><div class="kpi-lbl">${combPct}% complete</div></div></div></div></div>
+  <div class="panel"><h2>Combined</h2><div class="sub">All tasks</div><div class="donut-wrap">${donut(combPct,'#16273c',100,'DONE')}<div><div class="kpi sm">${totDone}/${totTasks}</div><div class="kpi-lbl">${combPct}% complete</div></div></div></div></div>
   <div class="panel mt"><h2>Task Burn-Up</h2><div class="sub">Cumulative tasks completed vs the planned ramp · Phase 2 (Jira + Smartsheet)</div>
-   ${(()=>{const cats=["Wk 1","Wk 2","Wk 3","Wk 4","Wk 5","Wk 6"];const scope=cats.map(()=>totTasks);const planned=cats.map((w,i)=>Math.round(totTasks*(i+1)/6));const actual=[Math.round(totDone*0.45),totDone,null,null,null,null];return lineChartV({cats,w:780,h:270,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),series:[{name:'Scope',color:'#A9832C',data:scope,dash:true},{name:'Planned',color:'#4F86C6',data:planned},{name:'Completed',color:'#5FA052',data:actual}]});})()}
-   <div class="legend"><span><i class="sw" style="background:#A9832C"></i>Scope (${totTasks} total)</span><span><i class="sw" style="background:#4F86C6"></i>Planned completion</span><span><i class="sw" style="background:#5FA052"></i>Completed (${totDone})</span></div>
+   ${(()=>{const cats=["Wk 1","Wk 2","Wk 3","Wk 4","Wk 5","Wk 6"];const scope=cats.map(()=>totTasks);const planned=cats.map((w,i)=>Math.round(totTasks*(i+1)/6));const actual=[Math.round(totDone*0.45),totDone,null,null,null,null];return lineChartV({cats,w:780,h:270,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),series:[{name:'Scope',color:'#2E7FC4',data:scope,dash:true},{name:'Planned',color:'#4F86C6',data:planned},{name:'Completed',color:'#5FA052',data:actual}]});})()}
+   <div class="legend"><span><i class="sw" style="background:#2E7FC4"></i>Scope (${totTasks} total)</span><span><i class="sw" style="background:#4F86C6"></i>Planned completion</span><span><i class="sw" style="background:#5FA052"></i>Completed (${totDone})</span></div>
    <div class="note">The distance between Completed and Planned is the schedule cushion or slip. Weekly history starts accruing now, so early weeks are estimated.</div></div>
   <div class="panel mt">${srcLink(LINKS.jiraIssues,'Jira SPY')}<h2>Task Completion by Person${why('velocity')}</h2><div class="sub">Jira + Smartsheet combined · velocity ranking — who is completing tasks fastest</div>
    <table><thead><tr><th style="width:46px">Velocity Rank</th><th>Person</th><th style="width:50px">Total</th><th style="width:50px">Done</th><th style="width:160px">% Complete</th><th style="width:84px">Velocity</th><th style="width:78px">Rating</th></tr></thead><tbody>
-   ${pplArr.map((p,i)=>`<tr><td style="text-align:center"><b style="font-family:Georgia;font-size:16px;color:${i===0?'var(--gold-br)':i<3?'var(--gold)':'var(--text-muted)'}">${i+1}</b></td><td><a href="person-${slugify(p.n)}.html" target="_blank" rel="noopener" title="Open ${p.n}'s full task list" style="color:var(--cream);font-weight:700;text-decoration:none;border-bottom:1px dotted var(--gold-br,#C9A84A)">${p.n}</a></td><td>${p.tot}</td><td>${p.done}</td><td><div style="display:flex;align-items:center;gap:7px"><div class="bar" style="flex:1;margin:0"><i style="width:${p.pct}%;background:${i===0?'#F4C870':'#D4A853'}"></i></div><span class="mini" style="width:32px">${p.pct}%</span></div></td><td><b style="color:var(--cream)">${p.vel.toFixed(1)}</b><span class="mini"> /wk</span></td><td><span class="tag-rag ${velCls(p.vel)}">${velRate(p.vel)}</span></td></tr>`).join("")}
+   ${pplArr.map((p,i)=>`<tr><td style="text-align:center"><b style="font-family:Georgia;font-size:13px;color:${i===0?'var(--gold-br)':i<3?'var(--gold)':'var(--text-muted)'}">#${i+1}</b></td><td><a href="person-${slugify(p.n)}.html" target="_blank" rel="noopener" title="Open ${p.n}'s full task list" style="color:var(--cream);font-weight:700;text-decoration:none;border-bottom:1px dotted var(--gold-br,#2E7FC4)">${p.n}</a></td><td>${p.tot}</td><td>${p.done}</td><td><div style="display:flex;align-items:center;gap:7px"><div class="bar" style="flex:1;margin:0"><i style="width:${p.pct}%;background:${i===0?'#4AA3E0':'#16273c'}"></i></div><span class="mini" style="width:32px">${p.pct}%</span></div></td><td><b style="color:var(--cream)">${p.vel.toFixed(1)}</b><span class="mini"> /wk</span></td><td><span class="tag-rag ${velCls(p.vel)}">${velRate(p.vel)}</span></td></tr>`).join("")}
    </tbody></table>
    <div class="note">Velocity = tasks completed ÷ ${weeksElapsed} weeks elapsed since the Jun 16 kickoff. Rank #1 is completing tasks the fastest. Rating: High ≥2/wk · Steady ≥1 · Building ≥0.5 · Ramping &gt;0. Unassigned items excluded; totals span all assigned SPY Jira issues plus 01 Project Plan tasks.</div></div>`;
 
@@ -598,16 +599,16 @@ function render(bill, risks, plan, jira){
  const bd_top=bd_load[0]||{n:"—",open:0};
  $("#x-tasks").innerHTML += `<div class="panel mt ${bd_pcls}"><h2>Burn-Down to Stage Gate 1</h2><div class="sub">Remaining tasks vs the ideal glide path to zero at Stage Gate 1 (Jul 28) · Jira + Smartsheet combined</div>
   <div style="display:flex;align-items:baseline;gap:12px;margin:2px 0 10px;flex-wrap:wrap"><span class="kpi sm">${bd_remain}</span><span class="kpi-lbl">tasks remaining of ${bd_scope}</span><span class="tag-rag ${bd_vcls}" style="font-size:12px;padding:3px 10px">${bd_verdict}</span></div>
-  ${lineChartV({cats:bd_cats,w:780,h:270,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),baseline:{v:0,label:'gate: zero remaining',color:'#7A6438'},series:[{name:'Ideal',color:'#4F86C6',data:bd_ideal},{name:'Remaining',color:'#B33A1B',data:bd_remainA}]})}
+  ${lineChartV({cats:bd_cats,w:780,h:270,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),baseline:{v:0,label:'gate: zero remaining',color:'#7385a0'},series:[{name:'Ideal',color:'#4F86C6',data:bd_ideal},{name:'Remaining',color:'#B33A1B',data:bd_remainA}]})}
   <div class="legend"><span><i class="sw" style="background:#4F86C6"></i>Ideal glide path to Jul 28</span><span><i class="sw" style="background:#B33A1B"></i>Actual remaining</span></div>
   <div class="note">The days ahead or behind figure converts the gap between actual remaining and the ideal line into schedule terms at the ideal completion rate. Discovery work tends to complete in bursts near deliverable due dates, so trailing the line early in the phase is expected; the slope toward the gate is what matters. Weeks 1 and 2 are seeded from the current total and firm up as weekly history accrues; Week 4 is live.</div></div>
  <div class="grid g2 mt"><div class="panel"><h2>Weekly Throughput vs Required Pace</h2><div class="sub">Tasks completed each week · amber line = pace needed to clear the backlog by Jul 28</div>
-  ${lineChartV({cats:bd_cats,w:380,h:250,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),baseline:{v:bd_reqPace,label:'required '+bd_reqPace+'/wk',color:'#B07A1E'},series:[{name:'Completed',color:'#5FA052',data:bd_thru},{name:'Trailing avg',color:'#A9832C',data:bd_avgS,dash:true,connect:true}]})}
-  <div class="legend"><span><i class="sw" style="background:#5FA052"></i>Completed per week</span><span><i class="sw" style="background:#A9832C"></i>Trailing avg (${bd_avg}/wk)</span><span><i class="sw" style="background:#B07A1E"></i>Required ${bd_reqPace}/wk</span></div>
+  ${lineChartV({cats:bd_cats,w:380,h:250,fmt:v=>Math.round(v),gridFmt:v=>Math.round(v),baseline:{v:bd_reqPace,label:'required '+bd_reqPace+'/wk',color:'#B07A1E'},series:[{name:'Completed',color:'#5FA052',data:bd_thru},{name:'Trailing avg',color:'#2E7FC4',data:bd_avgS,dash:true,connect:true}]})}
+  <div class="legend"><span><i class="sw" style="background:#5FA052"></i>Completed per week</span><span><i class="sw" style="background:#2E7FC4"></i>Trailing avg (${bd_avg}/wk)</span><span><i class="sw" style="background:#B07A1E"></i>Required ${bd_reqPace}/wk</span></div>
   <div class="note">Required pace = ${bd_remain} remaining ÷ ${bd_wksLeft} weeks left. When the green points sit below the amber line, the backlog is not clearing fast enough for the gate. Early weeks are seeded and will firm up as history accrues.</div></div>
   <div class="panel"><h2>Task Load and Concentration</h2><div class="sub">Open work per person (assigned minus done) · sorted by what is on each plate now</div>
   <table><thead><tr><th>Person</th><th style="width:50px;text-align:right">Done</th><th style="width:50px;text-align:right">Open</th><th style="width:150px">Load (done + open)</th></tr></thead><tbody>
-  ${bd_load.map(p=>`<tr><td><a href="person-${slugify(p.n)}.html" target="_blank" rel="noopener" title="Open ${p.n}'s full task list" style="color:var(--cream);font-weight:700;text-decoration:none;border-bottom:1px dotted var(--gold-br,#C9A84A)">${p.n}</a></td><td style="text-align:right">${p.done}</td><td style="text-align:right"><b>${p.open}</b></td><td><div class="bar" style="margin:0"><i style="width:${Math.round(p.done/bd_maxTot*100)}%;background:#5FA052"></i><i style="width:${Math.round(p.open/bd_maxTot*100)}%;background:#B07A1E"></i></div></td></tr>`).join("")}
+  ${bd_load.map(p=>`<tr><td><a href="person-${slugify(p.n)}.html" target="_blank" rel="noopener" title="Open ${p.n}'s full task list" style="color:var(--cream);font-weight:700;text-decoration:none;border-bottom:1px dotted var(--gold-br,#2E7FC4)">${p.n}</a></td><td style="text-align:right">${p.done}</td><td style="text-align:right"><b>${p.open}</b></td><td><div class="bar" style="margin:0"><i style="width:${Math.round(p.done/bd_maxTot*100)}%;background:#5FA052"></i><i style="width:${Math.round(p.open/bd_maxTot*100)}%;background:#B07A1E"></i></div></td></tr>`).join("")}
   </tbody></table>
   <div class="note"><b style="color:var(--cream)">Concentration:</b> ${bd_top.n} is carrying ${Math.round(bd_top.open/bd_openTot*100)}% of all open work (${bd_top.open} of ${bd_openTot} open items). Green = done, amber = open. This panel is about load balance, not speed; the velocity ranking above covers throughput.</div></div></div>`;
  })();
@@ -626,7 +627,7 @@ function render(bill, risks, plan, jira){
  const evmStrip=`<div class="panel"><h2>EVM At A Glance${why('overall')}</h2><div class="sub">Three verdicts at a glance: on budget, burning at the right pace, earning the value</div><div class="grid g3" style="gap:20px">`+
   bulletCard({label:'Budget',big:money(ac),verdict:ac<=pvNow?'Within Budget':ac<=pvNow*1.1?'Watch':'Over Budget',vcolor:ac<=pvNow?GV:ac<=pvNow*1.1?AV:RV,value:ac,target:pvNow,max:pvNow*1.6,barColor:'#5FA052',bands:[{from:0,to:pvNow,color:'#3E7142'},{from:pvNow,to:pvNow*1.1,color:'#B07A1E'},{from:pvNow*1.1,to:pvNow*1.6,color:'#B33A1B'}],sub:'effort spent vs '+money(pvNow)+' planned to date',vlab:money(ac),tlab:money(pvNow)})+
   bulletCard({label:'Burn',big:pctConsumed+'%',verdict:Math.abs(pctConsumed-pctElapsed)<=8?'On Pace':pctConsumed>pctElapsed?'Hot':'Behind Spend',vcolor:Math.abs(pctConsumed-pctElapsed)<=8?GV:pctConsumed>pctElapsed?RV:AV,value:pctConsumed,target:pctElapsed,max:100,barColor:'#4F86C6',bands:[{from:0,to:pctElapsed+8,color:'#3E7142'},{from:pctElapsed+8,to:100,color:'#B33A1B'}],sub:pctConsumed+'% budget used vs '+pctElapsed+'% time elapsed',vlab:pctConsumed+'%',tlab:pctElapsed+'%'})+
-  bulletCard({label:'Earned Value',big:combPct+'%',verdict:_evr>=0.9?'On Track':_evr>=0.6?'Building':'Behind',vcolor:_evr>=0.9?GV:_evr>=0.6?AV:RV,value:combPct,target:_ppl,max:100,barColor:'#A9832C',bands:[{from:0,to:Math.round(_ppl*0.6),color:'#B33A1B'},{from:Math.round(_ppl*0.6),to:Math.round(_ppl*0.9),color:'#B07A1E'},{from:Math.round(_ppl*0.9),to:100,color:'#3E7142'}],sub:combPct+'% scope earned vs '+_ppl+'% planned',vlab:combPct+'%',tlab:_ppl+'%'})+
+  bulletCard({label:'Earned Value',big:combPct+'%',verdict:_evr>=0.9?'On Track':_evr>=0.6?'Building':'Behind',vcolor:_evr>=0.9?GV:_evr>=0.6?AV:RV,value:combPct,target:_ppl,max:100,barColor:'#2E7FC4',bands:[{from:0,to:Math.round(_ppl*0.6),color:'#B33A1B'},{from:Math.round(_ppl*0.6),to:Math.round(_ppl*0.9),color:'#B07A1E'},{from:Math.round(_ppl*0.9),to:100,color:'#3E7142'}],sub:combPct+'% scope earned vs '+_ppl+'% planned',vlab:combPct+'%',tlab:_ppl+'%'})+
   `</div></div>`;
  const evTip=(v,i)=>`EV — Earned Value · ${weeksX[i]}\n${money(v)} = % work complete × Phase 2 budget (${money(BAC0)})`;
  const cpiTip=(v,i)=>`CPI — Cost Performance Index · ${weeksX[i]}\n${(+v).toFixed(2)} = EV ÷ AC = ${money(evSeries[i])} ÷ ${money(acSeries[i])}\nAbove 1.0 great · 0.9–1.0 good · below 0.7 poor`;
@@ -642,19 +643,19 @@ function render(bill, risks, plan, jira){
  const cpiFcTip=(v,i)=>`CPI forecast · ${weeksX[i]}\n${(+v).toFixed(2)} projected — recovering toward 1.0 (on budget) by Stage Gate 1`;
  const spiFcTip=(v,i)=>`SPI forecast · ${weeksX[i]}\n${(+v).toFixed(2)} projected — recovering toward 1.0 (on schedule) by Stage Gate 1`;
  const evmTop=`<div class="panel"><h2>EVM Performance Summary${why('overall')}</h2><div class="sub">Earned Value, CPI and SPI at a glance · hover the trend charts for value + formula</div><div class="grid g3" style="gap:18px">`+
-  bulletCard({label:'Earned Value',big:combPct+'%',verdict:_evr>=0.9?'On Track':_evr>=0.6?'Building':'Behind',vcolor:_evr>=0.9?GV:_evr>=0.6?AV:RV,value:combPct,target:_ppl,max:100,barColor:'#A9832C',bands:[{from:0,to:Math.round(_ppl*0.6),color:'#B33A1B'},{from:Math.round(_ppl*0.6),to:Math.round(_ppl*0.9),color:'#B07A1E'},{from:Math.round(_ppl*0.9),to:100,color:'#3E7142'}],sub:money(evFix)+' · '+combPct+'% scope earned vs '+_ppl+'% planned',vlab:combPct+'%',tlab:_ppl+'%'})+
+  bulletCard({label:'Earned Value',big:combPct+'%',verdict:_evr>=0.9?'On Track':_evr>=0.6?'Building':'Behind',vcolor:_evr>=0.9?GV:_evr>=0.6?AV:RV,value:combPct,target:_ppl,max:100,barColor:'#2E7FC4',bands:[{from:0,to:Math.round(_ppl*0.6),color:'#B33A1B'},{from:Math.round(_ppl*0.6),to:Math.round(_ppl*0.9),color:'#B07A1E'},{from:Math.round(_ppl*0.9),to:100,color:'#3E7142'}],sub:money(evFix)+' · '+combPct+'% scope earned vs '+_ppl+'% planned',vlab:combPct+'%',tlab:_ppl+'%'})+
   bulletCard({label:'CPI · Cost',big:cpiNow.toFixed(2),verdict:cpiNow>=0.95?'On Target':cpiNow>=0.8?'Below':'Behind',vcolor:cpiNow>=0.95?GV:cpiNow>=0.8?AV:RV,value:cpiNow,target:1,max:1.5,barColor:'#5FA052',bands:[{from:0,to:0.8,color:'#B33A1B'},{from:0.8,to:1,color:'#B07A1E'},{from:1,to:1.5,color:'#3E7142'}],sub:'EV ÷ AC · target 1.0',vlab:cpiNow.toFixed(2),tlab:'1.00'})+
   bulletCard({label:'SPI · Schedule',big:spiNow.toFixed(2),verdict:spiNow>=0.95?'On Target':spiNow>=0.8?'Below':'Behind',vcolor:spiNow>=0.95?GV:spiNow>=0.8?AV:RV,value:spiNow,target:1,max:1.5,barColor:'#4F86C6',bands:[{from:0,to:0.8,color:'#B33A1B'},{from:0.8,to:1,color:'#B07A1E'},{from:1,to:1.5,color:'#3E7142'}],sub:'EV ÷ PV · target 1.0',vlab:spiNow.toFixed(2),tlab:'1.00'})+
   `</div><div class="note" style="margin-top:8px">${idxNote}</div></div>`+
   `<div class="grid g3 mt">`+
    `<div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Earned Value Trend</h2><div class="sub">EV ($) vs PV · solid = actual · dashed = forecast to plan</div>`+
-    lineChartV({cats:weeksX,w:380,h:240,fmt:moneyK,gridFmt:moneyK,baseline:{v:BAC0,label:'BAC '+moneyK(BAC0),color:'#A9832C'},series:[{name:'PV',color:'#4F86C6',data:pvSeries},{name:'EV',color:'#5FA052',data:evSeries,tip:evTip},{name:'EV forecast',color:'#5FA052',data:evFc,dash:true,connect:true,tip:evFcTip}]})+
+    lineChartV({cats:weeksX,w:380,h:240,fmt:moneyK,gridFmt:moneyK,baseline:{v:BAC0,label:'BAC '+moneyK(BAC0),color:'#2E7FC4'},series:[{name:'PV',color:'#4F86C6',data:pvSeries},{name:'EV',color:'#5FA052',data:evSeries,tip:evTip},{name:'EV forecast',color:'#5FA052',data:evFc,dash:true,connect:true,tip:evFcTip}]})+
     `<div class="legend"><span><i class="sw" style="background:#5FA052"></i>EV earned</span><span><i class="sw" style="background:#4F86C6"></i>PV planned</span><span><i class="sw" style="border-top:2px dashed #5FA052;background:transparent;height:0"></i>EV forecast</span></div></div>`+
    `<div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>CPI Trend</h2><div class="sub">CPI = EV ÷ AC · target 1.0 · solid = actual · dashed = forecast</div>`+
-    lineChartV({cats:weeksX,w:380,h:240,ymin:0,ymax:1.5,fmt:v=>(+v).toFixed(2),gridFmt:v=>(+v).toFixed(2),baseline:{v:1,label:'target 1.0',color:'#7A6438'},series:[{name:'CPI',color:'#5FA052',data:cpiSeries,tip:cpiTip},{name:'CPI forecast',color:'#5FA052',data:cpiFc,dash:true,connect:true,tip:cpiFcTip}]})+
+    lineChartV({cats:weeksX,w:380,h:240,ymin:0,ymax:1.5,fmt:v=>(+v).toFixed(2),gridFmt:v=>(+v).toFixed(2),baseline:{v:1,label:'target 1.0',color:'#7385a0'},series:[{name:'CPI',color:'#5FA052',data:cpiSeries,tip:cpiTip},{name:'CPI forecast',color:'#5FA052',data:cpiFc,dash:true,connect:true,tip:cpiFcTip}]})+
     `<div class="legend"><span><i class="sw" style="background:#5FA052"></i>CPI actual</span><span><i class="sw" style="border-top:2px dashed #5FA052;background:transparent;height:0"></i>CPI forecast</span></div></div>`+
    `<div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>SPI Trend</h2><div class="sub">SPI = EV ÷ PV · target 1.0 · solid = actual · dashed = forecast</div>`+
-    lineChartV({cats:weeksX,w:380,h:240,ymin:0,ymax:1.5,fmt:v=>(+v).toFixed(2),gridFmt:v=>(+v).toFixed(2),baseline:{v:1,label:'target 1.0',color:'#7A6438'},series:[{name:'SPI',color:'#4F86C6',data:spiSeries,tip:spiTip},{name:'SPI forecast',color:'#4F86C6',data:spiFc,dash:true,connect:true,tip:spiFcTip}]})+
+    lineChartV({cats:weeksX,w:380,h:240,ymin:0,ymax:1.5,fmt:v=>(+v).toFixed(2),gridFmt:v=>(+v).toFixed(2),baseline:{v:1,label:'target 1.0',color:'#7385a0'},series:[{name:'SPI',color:'#4F86C6',data:spiSeries,tip:spiTip},{name:'SPI forecast',color:'#4F86C6',data:spiFc,dash:true,connect:true,tip:spiFcTip}]})+
     `<div class="legend"><span><i class="sw" style="background:#4F86C6"></i>SPI actual</span><span><i class="sw" style="border-top:2px dashed #4F86C6;background:transparent;height:0"></i>SPI forecast</span></div></div>`+
   `</div>`;
  $("#x-budget").innerHTML=evmTop+evmStrip+`<div class="grid g4 mt">
@@ -671,20 +672,20 @@ function render(bill, risks, plan, jira){
   </div>
   <div class="grid mt">
    <div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Earned Value Analysis</h2><div class="sub">Phase 2 · PV / EV / AC vs BAC ($) · solid = actual · dashed = forecast to Stage Gate 1</div>
-    ${lineChartV({cats:weeksX, w:780, h:300, fmt:moneyK, gridFmt:moneyK, baseline:{v:BAC0,label:'BAC '+moneyK(BAC0),color:'#A9832C'},
+    ${lineChartV({cats:weeksX, w:780, h:300, fmt:moneyK, gridFmt:moneyK, baseline:{v:BAC0,label:'BAC '+moneyK(BAC0),color:'#2E7FC4'},
       series:[{name:'PV',color:'#4F86C6',data:pvSeries},{name:'EV',color:'#5FA052',data:evSeries},{name:'AC',color:'#C0392B',data:acSeries},
         {name:'EV forecast',color:'#5FA052',data:evProj,dash:true,connect:true,tip:(v,i)=>`EV forecast · ${weeksX[i]}\n${money(v)} projected — earn the full Phase 2 scope (${money(BAC0)}) by Stage Gate 1 (Jul 28)`},
         {name:'AC forecast',color:'#C0392B',data:acProj,dash:true,connect:true,tip:(v,i)=>`AC forecast (EAC) · ${weeksX[i]}\n${money(v)} projected cost at completion = BAC ÷ CPI (${cpi2.toFixed(2)})`}]})}
-    <div class="legend"><span><i class="sw" style="background:#4F86C6"></i>PV — planned value</span><span><i class="sw" style="background:#5FA052"></i>EV — earned value</span><span><i class="sw" style="background:#C0392B"></i>AC — actual cost (effort)</span><span><i class="sw" style="background:#A9832C"></i>BAC — budget at completion</span><span><i class="sw" style="border-top:2px dashed #5FA052;background:transparent;height:0"></i>EV forecast → BAC</span><span><i class="sw" style="border-top:2px dashed #C0392B;background:transparent;height:0"></i>AC forecast → EAC</span></div></div>
+    <div class="legend"><span><i class="sw" style="background:#4F86C6"></i>PV — planned value</span><span><i class="sw" style="background:#5FA052"></i>EV — earned value</span><span><i class="sw" style="background:#C0392B"></i>AC — actual cost (effort)</span><span><i class="sw" style="background:#2E7FC4"></i>BAC — budget at completion</span><span><i class="sw" style="border-top:2px dashed #5FA052;background:transparent;height:0"></i>EV forecast → BAC</span><span><i class="sw" style="border-top:2px dashed #C0392B;background:transparent;height:0"></i>AC forecast → EAC</span></div></div>
   </div>
   <div class="grid g2 mt">
    <div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Estimate at Completion</h2><div class="sub">EAC (effort to complete) vs BAC ($)</div>
     ${lineChartV({cats:weeksX, w:380, h:260, fmt:moneyK, gridFmt:moneyK,
-      series:[{name:'BAC',color:'#A9832C',data:bacSeries},{name:'EAC',color:'#9DC3E6',data:eacSeries,dash:true,connect:true}]})}
-    <div class="legend"><span><i class="sw" style="background:#A9832C"></i>BAC ${moneyK(BAC0)}</span><span><i class="sw" style="background:#9DC3E6"></i>EAC forecast</span></div>
+      series:[{name:'BAC',color:'#2E7FC4',data:bacSeries},{name:'EAC',color:'#9DC3E6',data:eacSeries,dash:true,connect:true}]})}
+    <div class="legend"><span><i class="sw" style="background:#2E7FC4"></i>BAC ${moneyK(BAC0)}</span><span><i class="sw" style="background:#9DC3E6"></i>EAC forecast</span></div>
     <div class="note">EAC = AC + (BAC − EV); final point = BAC ÷ CPI. Above BAC means the vendor expends more effort than the fixed Phase 2 price — value to ClarkAI, margin pressure for ClarkAI Synthetics.</div></div>
    <div class="panel">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Variance Analysis</h2><div class="sub">CV = EV − AC · SV = EV − PV ($)</div>
-    ${lineChartV({cats:weeksX, w:380, h:260, fmt:moneyKs, gridFmt:moneyKs, baseline:{v:0,label:'on plan',color:'#7A6438'},
+    ${lineChartV({cats:weeksX, w:380, h:260, fmt:moneyKs, gridFmt:moneyKs, baseline:{v:0,label:'on plan',color:'#7385a0'},
       series:[{name:'CV',color:'#5FA052',data:cvSeries},{name:'SV',color:'#4F86C6',data:svSeries}]})}
     <div class="legend"><span><i class="sw" style="background:#5FA052"></i>CV — cost variance</span><span><i class="sw" style="background:#4F86C6"></i>SV — schedule variance</span></div></div>
   </div>
@@ -740,7 +741,7 @@ function render(bill, risks, plan, jira){
  $("#x-kpis").innerHTML=`${(()=>{const B=REF.bri||[];const P=v=>{const m=String(v).match(/-?\d+(\.\d+)?/);return m?parseFloat(m[0]):null;};const sc=B.map(k=>{const b=P(k[2]),t=P(k[3]),c=P(k[4]);let s=null;if(c!=null&&b!=null&&t!=null&&b!==t){const a=k[1]==='up'?(c-b)/(t-b):(b-c)/(b-t);s=Math.max(0,Math.min(10,Math.round(a*10)));}return {k,s};});const wc=sc.filter(x=>x.s!=null);const cov=B.length?Math.round(wc.length/B.length*100):0;const wsB=wc.reduce((a,x)=>a+x.k[7]*x.s,0);const bri=(cov>=60)?Math.round(wsB/10):null;const chip=st=>st==='Baselined'?`<span class="bpill" style="background:#9CCC65;color:#245214">Baselined</span>`:`<span class="bpill" style="background:#EAC85C;color:#5E4600">Baseline Pending</span>`;return `<div class="panel" style="margin-bottom:14px">${srcLink(LINKS.ssPlan,'KPI Log','ss')}<h2>Benefits Realization Index (BRI)</h2><div class="sub">KPI attainment at a glance · same 0–10 scale as the RAG · from the D10 KPI Log (SOW-measured KPIs)</div><div style="display:flex;align-items:center;gap:14px;margin:10px 0 4px"><span class="bpill" style="background:#8A5A12;color:#fff;font-size:14px;padding:6px 16px">${bri!=null?bri+' / 10 · '+band(bri):'BASELINING'}</span><span class="note" style="margin:0">${wc.length} of ${B.length} KPIs have a current reading · coverage ${cov}%.${bri==null?' The index publishes once coverage passes 60% (a locked baseline plus a current value).':''}</span></div><table><thead><tr><th>KPI</th><th>Dir</th><th>Baseline</th><th>Target</th><th>Current</th><th>Wt</th><th>Status</th></tr></thead><tbody>${B.map(k=>`<tr><td><b style="color:var(--cream)">${k[0]}</b></td><td>${k[1]==='up'?'▲':'▼'}</td><td>${k[2]}</td><td>${k[3]}</td><td>${k[4]||'—'}</td><td>${k[7]}</td><td>${chip(k[6])}</td></tr>`).join('')}</tbody></table><div class="note mt">Higher-is-better: (actual − baseline) ÷ (target − baseline) × 10 · Lower-is-better: (baseline − actual) ÷ (baseline − target) × 10 · BRI = Σ(weight × score) ÷ 10, gated at 60% coverage.</div></div>`;})()}<div class="grid g4">
   <div class="panel">${srcLink(LINKS.ssPlan,'Plan','ss')}<h2>KPIs Tracked</h2><div class="sub">Outcome measures</div><div class="kpi">${kT}</div><div class="kpi-lbl">across the program</div></div>
   <div class="panel good"><h2>Targets Defined</h2><div class="sub">Goals agreed</div><div class="donut-wrap">${donut(100,'#3E7142',96,'DEFINED')}<div><div class="kpi sm">${kT}/${kT}</div><div class="kpi-lbl">100% set</div></div></div></div>
-  <div class="panel warn"><h2>Baselines Set</h2><div class="sub">Phase 2 · D10</div><div class="donut-wrap">${donut(Math.round(kB/kT*100),'#A9832C',96,'BASELINED')}<div><div class="kpi sm">${kB}/${kT}</div><div class="kpi-lbl">in progress</div></div></div></div>
+  <div class="panel warn"><h2>Baselines Set</h2><div class="sub">Phase 2 · D10</div><div class="donut-wrap">${donut(Math.round(kB/kT*100),'#2E7FC4',96,'BASELINED')}<div><div class="kpi sm">${kB}/${kT}</div><div class="kpi-lbl">in progress</div></div></div></div>
   <div class="panel"><h2>Now Measuring</h2><div class="sub">Live tracking</div><div class="donut-wrap">${donut(0,'#8C6E54',96,'MEASURING')}<div><div class="kpi sm">0/${kT}</div><div class="kpi-lbl">begins post-baseline</div></div></div></div>
  </div>
  <div class="panel mt">${srcLink(LINKS.ssPlan,'Plan','ss')}<h2>KPI Targets & Improvement${why('velocity')}</h2><div class="sub">The improvement goal for each KPI · baselines and live values populate as Phase 2 D10 completes · anchor KPI: OTIF</div>
@@ -811,7 +812,7 @@ function buildEnh(plan, jira){
  var CRIT={D1:1,D3:1,D4:1,D9:1,D12:1};
  var DESC={"D1": "Current-state assessment across all nine ClarkAI workstreams — functional, technical, AI, change and data-readiness findings for the Robot Fuel platform.", "D2": "WS0 business case and Robot Fuel incentive proposal, framing the value of the platform rollout.", "D3": "Oracle Redwood readiness view and gap log for the bottling and procurement flows.", "D4a": "Integration map across WMS, Oracle Fusion, the 14 bottling nodes and the positronic agent layer.", "D4b": "Viscosity inventory sync analysis with two resolution options for the WMS-to-Fusion gap.", "D5": "Cutover hypothesis and blackout-safe sequencing for the migration.", "D6": "Baseline team plan with named androids across every workstream.", "D7": "Bottling-specific risk register with mitigations and owners.", "D8": "OCM assessment, change-readiness and AI governance for the operator population.", "D9a": "Quick-wins backlog: near-term automation pilots that pay back fast.", "D9b": "Viscosity accuracy demonstration proving the sync agent at line speed.", "D10": "KPI baselines, targets and measurement method across the workstreams.", "D11": "Tooling and governance setup: Jira, Smartsheet and EVM stood up and live.", "D12": "Stage-gate acceptance review and phase go/no-go.", "D13": "Detailed program plan and agile release plan for the remaining phases.", "D14": "Security and privilege assessment across the agent platform.", "D15": "Positronic agent architecture proposal for the production line.", "D16": "Workstream HTML prototype for the operations dashboards."};
  var QW=["WS1: viscosity sync agent Phase 2 and auto-reconciliation on high-volume tank transfers.", "WS2: recipe master-data cleanup for high-exception Robot Fuel SKUs.", "WS5: month-end close exception automation, already live and saving days.", "WS6: 14-node bottling scorecards feeding the live line dashboards."];
- var CBG='rgba(178,58,42,.10)', CBD='#B23A2A', GOLD='#C9A84A';
+ var CBG='rgba(178,58,42,.10)', CBD='#B23A2A', GOLD='#2E7FC4';
  var JBROWSE='#/browse/';
  var SSPLAN='#/sheets/2rcgVxqM9F6CQ4X8VcMHVhW6HgPp7RJcmQfF5VF1';
  function alink(url,text,extra){ if(!url) return text; return '<a href="'+url+'" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px dotted rgba(201,168,74,.55)"'+(extra||'')+'>'+text+'</a>'; }
@@ -835,8 +836,8 @@ function buildEnh(plan, jira){
  function critD(d){ return !!((A[d]&&A[d].crit)||CRIT[d]); }
  function ownerName(d){ var a=A[d]; var best='', bc=0; if(a){ for(var k in a.own){ if(a.own[k]>bc){ bc=a.own[k]; best=k; } } } return best||OW[d]||''; }
  function ragOf(a){ if(!a) return 'Planned'; var t=a.ssT+a.jT, dn=a.ssD+a.jD; if(t===0) return 'Planned'; if((a.ssOver+a.jOver)>0) return 'Red'; var p=pctOf(dn,t); return p>=100?'Green':(p>=50?'Amber':'Amber'); }
- var RC={Green:'#2f7d32',Amber:'#9c7a1a',Red:'#b3261e',Planned:'#7a6a4a'};
- function ragChip(t){ var c=RC[t]||'#7a6a4a'; return '<span style="display:inline-block;padding:1px 7px;border-radius:9px;font-size:10px;font-weight:700;color:#fff;background:'+c+'">'+esc(String(t).toUpperCase())+'</span>'; }
+ var RC={Green:'#2f7d32',Amber:'#2E7FC4',Red:'#b3261e',Planned:'#7385a0'};
+ function ragChip(t){ var c=RC[t]||'#7385a0'; return '<span style="display:inline-block;padding:1px 7px;border-radius:9px;font-size:10px;font-weight:700;color:#fff;background:'+c+'">'+esc(String(t).toUpperCase())+'</span>'; }
  function bar(dn,t){ var p=pctOf(dn,t); return '<div style="display:flex;align-items:center;gap:6px"><div style="flex:1;height:8px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+p+'%;background:'+GOLD+'"></i></div><span style="font-size:11px;color:var(--text-muted,#9a8f78);width:30px">'+p+'%</span></div>'; }
 
  function hdate(s){ if(!s) return '—'; var p=String(s).slice(0,10).split('-'); if(p.length<3||!p[1]) return esc(String(s)); var mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']; return (+p[2])+' '+(mo[(+p[1])-1]||p[1]); }
@@ -844,9 +845,9 @@ function buildEnh(plan, jira){
  var _T7=isoAdd(ISOT,7), _T14=isoAdd(ISOT,14);
  function bucketOf(due){ if(!due) return 'later'; if(due<ISOT) return 'overdue'; if(due<=_T7) return 'week'; if(due<=_T14) return 'next'; return 'later'; }
  function dot(c){ return '<span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:'+c+';vertical-align:middle;box-shadow:0 0 0 1px rgba(0,0,0,.18)"></span>'; }
- function statusText(st){ st=String(st||''); var l=st.toLowerCase(),c='#8a7a5c'; if(l==='done'||l==='complete')c='#3fa66a'; else if(l.indexOf('progress')>=0)c='#d9a441'; else if(l.indexOf('review')>=0)c='#c88a3a'; else if(l.indexOf('block')>=0)c=CBD; return '<span style="color:'+c+';font-weight:700">'+esc(st||'—')+'</span>'; }
- function ownerChip(nm){ if(!nm||nm==='—') return '<span style="color:var(--text-muted,#9a8f78)">—</span>'; var parts=String(nm).split(/\s+/); var ini=((parts[0]||' ')[0]||'')+((parts[1]||' ')[0]||''); return '<span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(201,168,74,.22);color:var(--cream,#efe3c8);font-size:10px;font-weight:700;align-items:center;justify-content:center">'+esc(ini.toUpperCase())+'</span>'+esc(nm)+'</span>'; }
- function pctTxt(p){ if(p==null||p==='') return '<span style="color:var(--text-muted,#9a8f78)">—</span>'; var n=parseFloat(p); if(isNaN(n)) return esc(String(p)); if(n<=1)n=n*100; return '<span style="font-size:11px;color:var(--text-dim,#b8ad95)">'+Math.round(n)+'%</span>'; }
+ function statusText(st){ st=String(st||''); var l=st.toLowerCase(),c='#7385a0'; if(l==='done'||l==='complete')c='#3fa66a'; else if(l.indexOf('progress')>=0)c='#2E7FC4'; else if(l.indexOf('review')>=0)c='#3E9EA8'; else if(l.indexOf('block')>=0)c=CBD; return '<span style="color:'+c+';font-weight:700">'+esc(st||'—')+'</span>'; }
+ function ownerChip(nm){ if(!nm||nm==='—') return '<span style="color:var(--text-muted,#9a8f78)">—</span>'; var parts=String(nm).split(/\s+/); var ini=((parts[0]||' ')[0]||'')+((parts[1]||' ')[0]||''); return '<span style="display:inline-flex;align-items:center;gap:7px;white-space:nowrap"><span style="display:inline-flex;width:22px;height:22px;border-radius:50%;background:rgba(201,168,74,.22);color:var(--cream,#e9eef4);font-size:10px;font-weight:700;align-items:center;justify-content:center">'+esc(ini.toUpperCase())+'</span>'+esc(nm)+'</span>'; }
+ function pctTxt(p){ if(p==null||p==='') return '<span style="color:var(--text-muted,#9a8f78)">—</span>'; var n=parseFloat(p); if(isNaN(n)) return esc(String(p)); if(n<=1)n=n*100; return '<span style="font-size:11px;color:var(--text-dim,#7385a0)">'+Math.round(n)+'%</span>'; }
  var THS='background:linear-gradient(180deg,#b8912f,#a5822b);color:#fff;padding:7px 11px;text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase';
  function th(t,c){ return '<th style="'+THS+(c?';text-align:center':'')+'">'+t+'</th>'; }
  function zebra(i){ return i%2? 'background:rgba(201,168,74,.06);':''; }
@@ -861,21 +862,21 @@ function buildEnh(plan, jira){
    var rowbg=isC?('background:'+CBG+';'):''; var lb=isC?('box-shadow:inset 3px 0 0 '+CBD+';'):'';
    var nm=NM[d]||''; var due=a&&a.due?a.due:'—'; var over=a?(a.ssOver+a.jOver):0;
    out+='<tr style="'+zebra(i)+rowbg+lb+'">'
-     +'<td data-exp="'+pfx+d+'" title="click to expand" style="cursor:pointer;white-space:nowrap;font-weight:700;color:var(--cream,#efe3c8)"><span id="arw-'+pfx+d+'" style="color:'+GOLD+';font-weight:700;margin-right:5px">▸</span>'+esc(d)+(isC?' <span style="color:'+CBD+';font-size:10px;font-weight:700">CRITICAL</span>':'')+'</td>'
+     +'<td data-exp="'+pfx+d+'" title="click to expand" style="cursor:pointer;white-space:nowrap;font-weight:700;color:var(--cream,#e9eef4)"><span id="arw-'+pfx+d+'" style="color:'+GOLD+';font-weight:700;margin-right:5px">▸</span>'+esc(d)+(isC?' <span style="color:'+CBD+';font-size:10px;font-weight:700">CRITICAL</span>':'')+'</td>'
      +'<td data-exp="'+pfx+d+'" title="click to expand" style="cursor:pointer">'+esc(nm)+'</td>'
      +'<td style="white-space:nowrap">'+esc(ownerName(d))+'</td>'
      +'<td style="width:150px">'+bar(dn,t)+'</td>'
      +'<td style="text-align:center;white-space:nowrap;font-size:11px" title="Smartsheet '+ssD+'/'+ssT+' + Jira '+jD+'/'+jT+'">'+dn+'/'+t+' <span style="color:var(--text-muted,#9a8f78)">('+ssD+'/'+ssT+'+'+jD+'/'+jT+')</span></td>'
      +'<td style="text-align:center;white-space:nowrap;'+(over>0?'color:'+CBD+';font-weight:700':'')+'">'+dd(due)+(over>0?' ⚠':'')+'</td>'
-     +'<td style="text-align:center;white-space:nowrap;font-size:11.5px;color:'+(a&&a.prop?'#c88a3a':'var(--text-muted,#9a8f78)')+'">'+(a&&a.prop?hdate(a.prop):'—')+'</td>'+'<td style="text-align:center">'+dot(RC[rag]||'#7a6a4a')+'</td></tr>';
+     +'<td style="text-align:center;white-space:nowrap;font-size:11.5px;color:'+(a&&a.prop?'#3E9EA8':'var(--text-muted,#9a8f78)')+'">'+(a&&a.prop?hdate(a.prop):'—')+'</td>'+'<td style="text-align:center">'+dot(RC[rag]||'#7385a0')+'</td></tr>';
    var subhtml='';
    if(a){ var keys=Object.keys(a.subs).filter(function(k){return k!==d;}).sort();
-     if(keys.length){ subhtml='<div style="margin-top:9px;font-size:10px;color:var(--gold-br,#c9a84a);text-transform:uppercase;letter-spacing:.05em">Sub-deliverables</div>';
+     if(keys.length){ subhtml='<div style="margin-top:9px;font-size:10px;color:var(--gold-br,#2E7FC4);text-transform:uppercase;letter-spacing:.05em">Sub-deliverables</div>';
        keys.forEach(function(sk){ var s=a.subs[sk]; var sd=DESC[sk]?('<div style="font-size:11px;color:var(--text-muted,#9a8f78);margin:0 0 3px 54px;line-height:1.45">'+esc(DESC[sk])+'</div>'):'';
-         subhtml+='<div style="display:flex;gap:8px;align-items:center;padding:3px 0 1px;font-size:12px"><span style="width:54px;font-weight:700;color:'+(s.crit?CBD:GOLD)+'">'+esc(sk)+'</span><span style="flex:1;color:var(--text-dim,#b8ad95)">'+alink(SSPLAN,esc(s.name))+'</span><span style="width:120px">'+bar(s.d,s.t)+'</span><span style="width:78px;text-align:right;'+(s.over>0?'color:'+CBD:'')+'">'+dd(s.due)+(s.over>0?' ⚠':'')+'</span></div>'+sd; }); } }
-   var qw=(d==='D9')?('<div style="margin-top:9px;font-size:10px;color:var(--gold-br,#c9a84a);text-transform:uppercase;letter-spacing:.05em">Quick wins by workstream (later-phase implementation)</div><ul style="margin:3px 0 0 18px;padding:0;font-size:11px;color:var(--text-dim,#b8ad95);line-height:1.5">'+QW.map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+'</ul>'):'';
+         subhtml+='<div style="display:flex;gap:8px;align-items:center;padding:3px 0 1px;font-size:12px"><span style="width:54px;font-weight:700;color:'+(s.crit?CBD:GOLD)+'">'+esc(sk)+'</span><span style="flex:1;color:var(--text-dim,#7385a0)">'+alink(SSPLAN,esc(s.name))+'</span><span style="width:120px">'+bar(s.d,s.t)+'</span><span style="width:78px;text-align:right;'+(s.over>0?'color:'+CBD:'')+'">'+dd(s.due)+(s.over>0?' ⚠':'')+'</span></div>'+sd; }); } }
+   var qw=(d==='D9')?('<div style="margin-top:9px;font-size:10px;color:var(--gold-br,#2E7FC4);text-transform:uppercase;letter-spacing:.05em">Quick wins by workstream (later-phase implementation)</div><ul style="margin:3px 0 0 18px;padding:0;font-size:11px;color:var(--text-dim,#7385a0);line-height:1.5">'+QW.map(function(q){return '<li>'+esc(q)+'</li>';}).join('')+'</ul>'):'';
    out+='<tr id="exp-'+pfx+d+'" style="display:none"><td colspan="8" style="padding:0 0 9px 0"><div style="margin:2px 0 2px 18px;border-left:2px solid rgba(201,168,74,.35);padding-left:12px">'
-     +'<div style="font-size:12px;color:var(--text-dim,#b8ad95);line-height:1.55">'+esc(DESC[d]||'')+' '+alink(JBROWSE+'SPY-'+i,'&#8599; open '+esc(d)+' in Jira',' style="color:var(--gold-br,#c9a84a);text-decoration:none;font-weight:700;white-space:nowrap"')+'</div>'+subhtml+qw+'</div></td></tr>';
+     +'<div style="font-size:12px;color:var(--text-dim,#7385a0);line-height:1.55">'+esc(DESC[d]||'')+' '+alink(JBROWSE+'SPY-'+i,'&#8599; open '+esc(d)+' in Jira',' style="color:var(--gold-br,#2E7FC4);text-decoration:none;font-weight:700;white-space:nowrap"')+'</div>'+subhtml+qw+'</div></td></tr>';
   }
   return out;
  }
@@ -898,21 +899,21 @@ function buildEnh(plan, jira){
   var _bk={overdue:[],week:[],next:[],later:[]}; critOpen.forEach(function(r){ _bk[bucketOf(r.due)].push(r); });
   var _critRed=0; for(var _i=1;_i<=16;_i++){ var _dd='D'+_i; if(critD(_dd)&&ragOf(A[_dd])==='Red')_critRed++; }
   function _kcard(lbl,val,col){ return '<div style="flex:1;min-width:120px;background:var(--bg-panel,#241c12);border:1px solid rgba(201,168,74,.2);border-radius:10px;padding:9px 14px"><div style="font-family:Georgia,serif;font-size:23px;color:'+col+';font-weight:700">'+val+'</div><div style="font-size:10px;color:var(--text-muted,#9a8f78);text-transform:uppercase;letter-spacing:.04em">'+lbl+'</div></div>'; }
-  var _kpi='<div style="display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 12px">'+_kcard('Overdue',_bk.overdue.length,CBD)+_kcard('Due this week',_bk.week.length,'#d9a441')+_kcard('Critical deliverables Red',_critRed,CBD)+'</div>';
+  var _kpi='<div style="display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 12px">'+_kcard('Overdue',_bk.overdue.length,CBD)+_kcard('Due this week',_bk.week.length,'#2E7FC4')+_kcard('Critical deliverables Red',_critRed,CBD)+'</div>';
   var _di=0;
-  function _crow(r){ var bkt=bucketOf(r.due); var dc=bkt==='overdue'?CBD:(bkt==='week'?'#d9a441':'#5fa052'); _di++; return '<tr style="'+zebra(_di)+'">'
+  function _crow(r){ var bkt=bucketOf(r.due); var dc=bkt==='overdue'?CBD:(bkt==='week'?'#2E7FC4':'#5fa052'); _di++; return '<tr style="'+zebra(_di)+'">'
     +'<td style="'+TDS+';text-align:center;width:30px">'+dot(dc)+'</td>'
-    +'<td style="'+TDS+';color:var(--cream,#efe3c8);font-weight:600">'+alink((r.src==='Jira'?JBROWSE+r.key:(r.rowId?SSPLAN+'?rowId='+r.rowId:SSPLAN)),esc(r.name))+(r.key?'<div style="font-size:10px;color:var(--text-muted,#9a8f78);font-weight:400">'+alink(JBROWSE+r.key,esc(r.key))+'</div>':'')+'</td>'
-    +'<td style="'+TDS+';white-space:nowrap"><span style="font-weight:700;color:var(--gold-br,#c9a84a)">'+esc(r.d)+'</span></td>'
+    +'<td style="'+TDS+';color:var(--cream,#e9eef4);font-weight:600">'+alink((r.src==='Jira'?JBROWSE+r.key:(r.rowId?SSPLAN+'?rowId='+r.rowId:SSPLAN)),esc(r.name))+(r.key?'<div style="font-size:10px;color:var(--text-muted,#9a8f78);font-weight:400">'+alink(JBROWSE+r.key,esc(r.key))+'</div>':'')+'</td>'
+    +'<td style="'+TDS+';white-space:nowrap"><span style="font-weight:700;color:var(--gold-br,#2E7FC4)">'+esc(r.d)+'</span></td>'
     +'<td style="'+TDS+'">'+ownerChip(r.owner)+'</td>'
     +'<td style="'+TDS+'">'+statusText(r.st)+'</td>'
     +'<td style="'+TDS+';text-align:center">'+pctTxt(r.pct)+'</td>'
     +'<td style="'+TDS+';text-align:center;white-space:nowrap;'+(bkt==='overdue'?'color:'+CBD+';font-weight:700':'')+'">'+hdate(r.due)+(bkt==='overdue'?' ⚠':'')+'</td>'
-    +'<td style="'+TDS+';text-align:center;white-space:nowrap;color:'+(r.prop?'#c88a3a':'var(--text-muted,#9a8f78)')+'">'+(r.prop?hdate(r.prop):'—')+'</td>'+'<td style="'+TDS+';text-align:center"><span style="font-size:10px;color:var(--text-muted,#9a8f78)">'+esc(r.src)+'</span></td></tr>'; }
+    +'<td style="'+TDS+';text-align:center;white-space:nowrap;color:'+(r.prop?'#3E9EA8':'var(--text-muted,#9a8f78)')+'">'+(r.prop?hdate(r.prop):'—')+'</td>'+'<td style="'+TDS+';text-align:center"><span style="font-size:10px;color:var(--text-muted,#9a8f78)">'+esc(r.src)+'</span></td></tr>'; }
   function _subh(label,col,arr){ if(!arr.length) return ''; return '<tr><td colspan="9" style="padding:11px 11px 4px;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:'+col+'">'+label+' ('+arr.length+')</td></tr>'+arr.map(_crow).join(''); }
   var critPane='<div class="panel"><h2>Critical Open Tasks</h2><div class="sub">'+critOpen.length+' open on critical deliverables = '+ssN+' Smartsheet + '+jN+' Jira &middot; grouped by urgency</div>'+_kpi
    +'<table style="width:100%;border-collapse:collapse"><thead><tr>'+th('')+th('Task')+th('Deliv')+th('Owner')+th('Status')+th('%',1)+th('Due',1)+th('Proposed',1)+th('Source',1)+'</tr></thead><tbody>'
-   +_subh('Overdue',CBD,_bk.overdue)+_subh('Due this week','#d9a441',_bk.week)+_subh('Due next week','#a5822b',_bk.next)+_subh('Later / no date','#8a7a5c',_bk.later)
+   +_subh('Overdue',CBD,_bk.overdue)+_subh('Due this week','#2E7FC4',_bk.week)+_subh('Due next week','#a5822b',_bk.next)+_subh('Later / no date','#7385a0',_bk.later)
    +'</tbody></table><div class="note">Critical = task belongs to a deliverable flagged Critical in the plan (D1, D3, D4, D9, D12) or inherited by a Jira issue under that Initiative.</div></div>';
   /* Critical Deliverables pane (default view of the Tasks tab) */
   var critCount=0; for(var i=1;i<=16;i++){ if(critD('D'+i))critCount++; }
@@ -931,23 +932,94 @@ function buildEnh(plan, jira){
    +parr.map(function(p){ _pi++; return '<tr style="'+zebra(_pi)+'"><td style="'+TDS+'">'+ownerChip(p.nm)+'</td><td style="'+TDS+';text-align:center">'+p.t+'</td><td style="'+TDS+';text-align:center">'+p.d+'</td><td style="'+TDS+';width:160px">'+bar(p.d,p.t)+'</td><td style="'+TDS+';text-align:center;'+(p.over>0?'color:'+CBD+';font-weight:700':'')+'">'+p.over+'</td><td style="'+TDS+';text-align:center;'+(p.crit>0?'color:'+CBD+';font-weight:700':'')+'">'+p.crit+'</td></tr>'; }).join('')
    +'</tbody></table></div>';
   /* sub-tab shell */
-  var subnav='<div class="tsub" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px">'
+  var whatifPane='<div class="grid g2"><div class="panel"><h2>What-If Levers</h2><div class="sub">Drag to model the effect on the overall RAG · risk is held at the live Risk Log value</div>\n<div style="margin:10px 0 4px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Task completion %</span><b id="wi-comp-v" style="color:var(--cream)"></b></div><input id="wi-comp" type="range" min="0" max="100" step="1" style="width:100%"></div>\n<div style="margin:10px 0 4px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Completion velocity <span style="color:var(--text-dim)">(100 = on required pace)</span></span><b id="wi-vel-v" style="color:var(--cream)"></b></div><input id="wi-vel" type="range" min="50" max="150" step="1" style="width:100%"></div>\n<div style="margin:10px 0 4px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Critical task completion %</span><b id="wi-crit-v" style="color:var(--cream)"></b></div><input id="wi-crit" type="range" min="0" max="100" step="1" style="width:100%"></div>\n<div style="margin:10px 0 4px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Schedule performance <span style="color:var(--text-dim)">(SPI×100, 100 = on plan)</span></span><b id="wi-sched-v" style="color:var(--cream)"></b></div><input id="wi-sched" type="range" min="50" max="150" step="1" style="width:100%"></div>\n<div style="margin:10px 0 4px"><div style="display:flex;justify-content:space-between;font-size:12px"><span>Budget performance <span style="color:var(--text-dim)">(CPI×100, 100 = on budget)</span></span><b id="wi-bud-v" style="color:var(--cream)"></b></div><input id="wi-bud" type="range" min="50" max="150" step="1" style="width:100%"></div>\n<div style="margin-top:12px"><button id="wi-reset" class="tsb">Reset to actuals</button> <span id="wi-delta" style="font-size:12px;margin-left:8px"></span></div>\n<div class="note">Model: weighted 0–10 score. Weights — risk 3.0 (fixed), completion 2.5, critical 1.5, velocity 1.0, schedule 1.0, budget 1.0. Bands: 0–2 Red · 4–5 Amber · 8–10 Green. This is a planning simulation, not the live rating.</div></div>\n<div class="panel"><h2>Simulated Overall RAG</h2><div class="sub">Recomputed live from the levers</div>\n<div id="wi-gauge" style="margin:6px 0 4px"></div>\n<div style="text-align:center;margin:6px 0"><span id="wi-score" class="big-rag"></span><span style="font-size:20px;color:var(--text-dim)"> / 10</span> &nbsp; <span id="wi-band"></span></div>\n<h2 style="margin-top:16px">Weighted Contribution</h2><div class="sub">How many points each lever adds (weight × score ÷ 10)</div>\n<div id="wi-bars" style="margin-top:6px"></div>\n<h2 style="margin-top:16px">Projected EVM</h2><div class="sub">From the schedule, budget and completion levers</div>\n<div id="wi-evm" style="margin-top:4px"></div></div></div>\n';
+   var subnav='<div class="tsub" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px">'
     +'<button class="tsb active" data-ts="deliv">Critical Deliverables</button>'
     +'<button class="tsb" data-ts="crit">Criticality</button>'
     +'<button class="tsb" data-ts="progress">% Done</button>'
-    +'<button class="tsb" data-ts="person">By Person</button></div>';
+    +'<button class="tsb" data-ts="person">By Person</button>'+'<button class="tsb" data-ts="whatif">What If</button></div>';
   xt.innerHTML=subnav
     +'<div class="tspane" data-tp="deliv">'+calloutPane+'</div>'
     +'<div class="tspane" data-tp="crit" style="display:none">'+critPane+'</div>'
     +'<div class="tspane" data-tp="progress" style="display:none">'+existing+'</div>'
-    +'<div class="tspane" data-tp="person" style="display:none">'+personPane+'</div>';
+    +'<div class="tspane" data-tp="person" style="display:none">'+personPane+'</div>'+'<div class="tspane" data-tp="whatif" style="display:none">'+whatifPane+'</div>';
   (function(){ var _ssD=plan.filter(function(r){return r['Status']==='Done';}).length;
    var _ssIP=plan.filter(function(r){return r['Status']==='In Progress';}).length;
    var _ssTD=plan.filter(function(r){return r['Status']==='To Do';}).length;
    var _ssT=_ssD+_ssIP+_ssTD; var _jD=jira.done||0,_jT=jira.total||0,_cD=_ssD+_jD,_cT=_ssT+_jT;
-   function _pie(lbl,dn,t,col,sub){ var p=t?dn/t:0; return '<div style="text-align:center"><div style="width:130px;height:130px;border-radius:50%;background:conic-gradient('+col+' '+(p*360)+'deg, rgba(120,100,50,.15) 0);box-shadow:0 0 0 1px rgba(120,100,50,.18);margin:0 auto"></div><div style="margin-top:9px;font-weight:700;color:var(--cream,#5a4a2a);font-size:13px">'+lbl+'</div><div style="font-size:12px;color:var(--text-muted,#8a7a5c)">'+Math.round(p*100)+'% &middot; '+dn+' / '+t+' done</div>'+(sub?'<div style="font-size:10.5px;color:var(--text-muted,#9a8f78);margin-top:1px">'+sub+'</div>':'')+'</div>'; }
+   function _pie(lbl,dn,t,col,sub){ var p=t?dn/t:0; return '<div style="text-align:center"><div style="width:130px;height:130px;border-radius:50%;background:conic-gradient('+col+' '+(p*360)+'deg, rgba(120,100,50,.15) 0);box-shadow:0 0 0 1px rgba(120,100,50,.18);margin:0 auto"></div><div style="margin-top:9px;font-weight:700;color:var(--cream,#5a4a2a);font-size:13px">'+lbl+'</div><div style="font-size:12px;color:var(--text-muted,#7385a0)">'+Math.round(p*100)+'% &middot; '+dn+' / '+t+' done</div>'+(sub?'<div style="font-size:10.5px;color:var(--text-muted,#9a8f78);margin-top:1px">'+sub+'</div>':'')+'</div>'; }
    xt.insertAdjacentHTML('beforeend','<div class="panel" style="margin-top:14px"><h2>Task Completion</h2><div class="sub">Done vs total, count-based &middot; combined is Smartsheet + Jira added together &middot; section/header rows excluded</div><div style="display:flex;gap:40px;flex-wrap:wrap;justify-content:center;padding:16px 0 8px">'+_pie('All Tasks',_cD,_cT,'#c79a3a','')+_pie('Jira (SPY)',_jD,_jT,'#2f74c0','')+_pie('Smartsheet Plan',_ssD,_ssT,'#4f9a54',_ssIP+' in progress &middot; '+_ssTD+' to do')+'</div></div>'); })();
  }
+
+ /* ---- reorder % Done pane (additive, DOM-only): Task Completion by Person right after
+       the donut grid; remove the Task Load and Concentration panel ---- */
+ (function(){
+  var pane=document.querySelector('#x-tasks .tspane[data-tp="progress"]'); if(!pane) return;
+  function panelByH2(txt){var ps=pane.querySelectorAll('.panel');for(var i=0;i<ps.length;i++){var h=ps[i].querySelector('h2');if(h&&h.textContent.indexOf(txt)===0)return ps[i];}return null;}
+  var g3=pane.querySelector('.grid.g3');
+  var tcp=panelByH2('Task Completion by Person');
+  if(g3&&tcp&&g3.parentNode){ g3.parentNode.insertBefore(tcp, g3.nextSibling); }
+  var tl=panelByH2('Task Load and Concentration');
+  if(tl){ var grid=tl.parentNode; tl.remove(); if(grid&&grid.classList&&grid.classList.contains('g2')){ grid.classList.remove('g2'); } }
+ })();
+
+/* ---- What-If simulator wiring (additive) ---- */
+ (function(){
+  var host=document.querySelector('#x-tasks .tspane[data-tp="whatif"]'); if(!host) return;
+  var S=window.__RAGSEED||{}; var money=function(v){return '$'+Math.round(v).toLocaleString();};
+  var cT=0,cD=0;
+  (plan||[]).forEach(function(r){var d=topD(r['Deliverable ID']);var c=isCrit(r['Critical'])||(d&&critD(d));if(!c)return;cT++;if(r['Status']==='Done')cD++;});
+  (issues||[]).forEach(function(it){if(!it.critical)return;cT++;if((it.cat||'')==='Done')cD++;});
+  var critLive=cT?Math.round(cD/cT*100):60;
+  var clamp=function(v,a,b){return Math.max(a,Math.min(b,v));};
+  var seeds={comp:Math.round(S.combPct||40),vel:clamp(Math.round((S.SPI||1)*100),50,150),
+    crit:critLive,sched:clamp(Math.round((S.SPI||1)*100),50,150),bud:clamp(Math.round((S.CPI||1)*100),50,150)};
+  var els={comp:host.querySelector('#wi-comp'),vel:host.querySelector('#wi-vel'),crit:host.querySelector('#wi-crit'),sched:host.querySelector('#wi-sched'),bud:host.querySelector('#wi-bud')};
+  Object.keys(seeds).forEach(function(k){if(els[k])els[k].value=seeds[k];});
+  var schedFrac=S.schedFrac||0.66; var riskS=(typeof S.risk==='number')?S.risk:6;
+  var W={risk:3.0,comp:2.5,crit:1.5,vel:1.0,sched:1.0,bud:1.0};
+  var c10=function(x){return Math.max(0,Math.min(10,Math.round(x)));};
+  var compScore=function(v){return c10((v/100/schedFrac-0.5)*20);};
+  var idxScore=function(p){return c10((p/100-0.5)*20);};
+  var critScore=function(v){return c10(v/10);};
+  function scores(comp,vel,crit,sched,bud){return {risk:riskS,comp:compScore(comp),crit:critScore(crit),vel:idxScore(vel),sched:idxScore(sched),bud:idxScore(bud)};}
+  function wsumOf(sc){return W.risk*sc.risk+W.comp*sc.comp+W.crit*sc.crit+W.vel*sc.vel+W.sched*sc.sched+W.bud*sc.bud;}
+  // calibrate so that the seed (live) values reproduce the live overall score
+  var seedWsum=wsumOf(scores(seeds.comp,seeds.vel,seeds.crit,seeds.sched,seeds.bud));
+  var CAL=(typeof S.score==='number')?(S.score*10-seedWsum):0;
+  var band=function(s){s=+s;return s>=9?['GREEN','#2E8B3D']:s>=8?['LIGHT GREEN','#5A9A22']:s>=6?['LIGHT AMBER','#B8860B']:s>=4?['AMBER','#C0871A']:s>=3?['LIGHT RED','#C6483A']:['RED','#B83A2A'];};
+  var ragTri=function(s){
+    function box(lbl,on,c){return '<div style="flex:1;text-align:center;padding:'+(on?'16px 8px':'11px 8px')+';border-radius:8px;font-family:Georgia,serif;font-weight:700;'+(on?('background:'+c+';color:#fff;font-size:20px'):('background:transparent;border:1px solid '+c+';color:'+c+';font-size:13px'))+'">'+lbl+'</div>';}
+    return '<div style="display:flex;gap:8px;align-items:center">'+box('GREEN',s>=8,'#2E8B3D')+box('AMBER',s>=4&&s<8,'#C0871A')+box('RED',s<4,'#B83A2A')+'</div>';};
+  function update(){
+    var comp=+els.comp.value,vel=+els.vel.value,crit=+els.crit.value,sched=+els.sched.value,bud=+els.bud.value;
+    host.querySelector('#wi-comp-v').textContent=comp+'%';
+    host.querySelector('#wi-vel-v').textContent=vel;
+    host.querySelector('#wi-crit-v').textContent=crit+'%';
+    host.querySelector('#wi-sched-v').textContent=sched;
+    host.querySelector('#wi-bud-v').textContent=bud;
+    var sc=scores(comp,vel,crit,sched,bud);
+    var score=clamp(Math.round((wsumOf(sc)+CAL)/10),0,10); var bd=band(score);
+    host.querySelector('#wi-gauge').innerHTML=ragTri(score);
+    var se=host.querySelector('#wi-score'); se.textContent=score; se.style.color=bd[1];
+    host.querySelector('#wi-band').innerHTML='<span style="font-weight:700;color:'+bd[1]+'">'+bd[0]+'</span>';
+    var rows=[['Open risks (live)',W.risk,sc.risk],['Task completion',W.comp,sc.comp],['Critical completion',W.crit,sc.crit],['Velocity',W.vel,sc.vel],['Schedule',W.sched,sc.sched],['Budget',W.bud,sc.bud]];
+    var maxPts=3.0;
+    host.querySelector('#wi-bars').innerHTML=rows.map(function(r){var pts=r[1]*r[2]/10;var w=Math.min(100,pts/maxPts*100);
+      return '<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><span style="width:132px;font-size:11px;color:var(--text-muted)">'+r[0]+'</span><div style="flex:1;background:var(--bg-surface);border-radius:5px;height:12px;overflow:hidden"><i style="display:block;height:100%;width:'+w+'%;background:'+bd[1]+'"></i></div><b style="width:42px;text-align:right;font-size:12px;color:var(--cream)">'+pts.toFixed(1)+'</b></div>';}).join('');
+    var cpi=bud/100,spi=sched/100,bac=S.bac||300000,eac=cpi?Math.round(bac/cpi):bac,vac=bac-eac;
+    host.querySelector('#wi-evm').innerHTML='<table><tbody>'
+      +'<tr><td style="color:var(--text-muted)">SPI (schedule)</td><td style="text-align:right;font-weight:700;color:'+(spi>=1?'var(--good)':'var(--warn)')+'">'+spi.toFixed(2)+'</td></tr>'
+      +'<tr><td style="color:var(--text-muted)">CPI (cost)</td><td style="text-align:right;font-weight:700;color:'+(cpi>=1?'var(--good)':'var(--warn)')+'">'+cpi.toFixed(2)+'</td></tr>'
+      +'<tr><td style="color:var(--text-muted)">EAC (est. at completion)</td><td style="text-align:right;font-weight:700;color:var(--cream)">'+money(eac)+'</td></tr>'
+      +'<tr><td style="color:var(--text-muted)">VAC (variance)</td><td style="text-align:right;font-weight:700;color:'+(vac>=0?'var(--good)':'var(--bad-br)')+'">'+(vac>=0?'+':'')+money(vac)+'</td></tr></tbody></table>';
+    var live=(typeof S.score==='number')?S.score:score; var d=score-live;
+    host.querySelector('#wi-delta').innerHTML='vs live '+live+'/10: <b style="color:'+(d>0?'var(--good)':d<0?'var(--bad-br)':'var(--text-muted)')+'">'+(d>0?'+':'')+d+'</b>';
+  }
+  ['comp','vel','crit','sched','bud'].forEach(function(k){if(els[k])els[k].addEventListener('input',update);});
+  var rb=host.querySelector('#wi-reset'); if(rb)rb.addEventListener('click',function(){Object.keys(seeds).forEach(function(k){if(els[k])els[k].value=seeds[k];});update();});
+  update();
+ })();
 
  /* ---- one delegated handler for sub-tabs + expanders ---- */
  if(!window.__ENH_CLICK){ window.__ENH_CLICK=1;
@@ -962,7 +1034,7 @@ function buildEnh(plan, jira){
 }
 /* style for sub-tab buttons */
 (function(){ if(document.getElementById('enhcss'))return; var s=document.createElement('style'); s.id='enhcss';
- s.textContent='.tsb{background:var(--bg-panel,#241c12);color:var(--text-dim,#b8ad95);border:1px solid var(--border-lt,#3a2f1e);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit}.tsb.active{background:#5a3e2b;color:#fff;font-weight:700;border-color:#5a3e2b}';
+ s.textContent='.tsb{background:var(--bg-panel,#241c12);color:var(--text-dim,#7385a0);border:1px solid var(--border-lt,#3a2f1e);border-radius:7px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:inherit}.tsb.active{background:#1c5a94;color:#fff;font-weight:700;border-color:#1c5a94}';
  (document.head||document.documentElement).appendChild(s); })();
 
 /* ===== EMBEDDED CLARKAI DEMO DATA (static, fictitious) ===== */
