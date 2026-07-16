@@ -1097,6 +1097,40 @@ function buildEnh(plan, jira){
   var xt=X(today); g+='<line x1="'+xt.toFixed(1)+'" y1="'+topP+'" x2="'+xt.toFixed(1)+'" y2="'+(H-22)+'" stroke="#1E6FE0" stroke-width="1.5" stroke-dasharray="3,2"/><text x="'+xt.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#1E6FE0" text-anchor="middle">today</text>';
   var xg=X(GATE); g+='<line x1="'+xg.toFixed(1)+'" y1="'+topP+'" x2="'+xg.toFixed(1)+'" y2="'+(H-22)+'" stroke="#C0392B" stroke-width="1.5"/><text x="'+xg.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#C0392B" text-anchor="middle">'+GLABEL+'</text>';
   g+='</svg>';
+  // ----- Visual: burn-up line (planned vs actual vs forecast) -----
+  var bTotT=0,bTotD=0; rows.forEach(function(r){bTotT+=r.t;bTotD+=r.dn;});
+  var actPct=bTotT?(bTotD/bTotT*100):0;
+  var bsc=rows.filter(function(r){return r.t>0&&r.due;});
+  var bu='';
+  if(bsc.length){
+    var dd2=bsc.map(function(r){return r.due.getTime();});
+    var bStart=new Date(Math.min.apply(null,dd2)-7*day);
+    var bEnd=new Date(Math.max.apply(null,dd2.concat([GATE.getTime(),today.getTime()])));
+    var bSpan=Math.max(1,db(bStart,bEnd));
+    var BW=920,BH=220,bpL=42,bpR=54,bpT=16,bpB=28,plotW=BW-bpL-bpR,plotH=BH-bpT-bpB;
+    var BX=function(dt){return bpL+db(bStart,dt)/bSpan*plotW;};
+    var BY=function(p){return bpT+(1-p/100)*plotH;};
+    bu='<svg width="100%" viewBox="0 0 '+BW+' '+BH+'" style="font-family:inherit">';
+    [0,25,50,75,100].forEach(function(p){var y=BY(p);bu+='<line x1="'+bpL+'" y1="'+y.toFixed(1)+'" x2="'+(BW-bpR)+'" y2="'+y.toFixed(1)+'" stroke="var(--border-lt)" stroke-width="1"/><text x="'+(bpL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9" fill="var(--text-dim)" text-anchor="end">'+p+'%</text>';});
+    for(var bk=0;bk<=4;bk++){var bdt=new Date(bStart.getTime()+bk*(bEnd-bStart)/4);var bx=BX(bdt);bu+='<text x="'+bx.toFixed(1)+'" y="'+(BH-8)+'" font-size="9" fill="var(--text-dim)" text-anchor="middle">'+hdate(iso(bdt))+'</text>';}
+    var sorted=bsc.slice().sort(function(a,b){return a.due-b.due;});
+    var cum=0,lastY=BY(0),pp='M'+BX(bStart).toFixed(1)+','+BY(0).toFixed(1);
+    sorted.forEach(function(r){var x=BX(r.due);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);cum+=r.t;lastY=BY(cum/bTotT*100);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);});
+    pp+=' L'+BX(bEnd).toFixed(1)+','+lastY.toFixed(1);
+    bu+='<path d="'+pp+'" fill="none" stroke="#5b6b82" stroke-width="2"/>';
+    bu+='<path d="M'+BX(bStart).toFixed(1)+','+BY(0).toFixed(1)+' L'+BX(today).toFixed(1)+','+BY(actPct).toFixed(1)+'" fill="none" stroke="#2f7d32" stroke-width="2.4"/>';
+    bu+='<circle cx="'+BX(today).toFixed(1)+'" cy="'+BY(actPct).toFixed(1)+'" r="4" fill="#2f7d32"/><text x="'+(BX(today)+7).toFixed(1)+'" y="'+(BY(actPct)+3).toFixed(1)+'" font-size="10" fill="#2f7d32" font-weight="700">'+Math.round(actPct)+'%</text>';
+    var fPct=Math.min(100,actPct*db(bStart,GATE)/Math.max(1,db(bStart,today)));
+    bu+='<path d="M'+BX(today).toFixed(1)+','+BY(actPct).toFixed(1)+' L'+BX(GATE).toFixed(1)+','+BY(fPct).toFixed(1)+'" fill="none" stroke="#b3261e" stroke-width="2" stroke-dasharray="6,4"/>';
+    bu+='<circle cx="'+BX(GATE).toFixed(1)+'" cy="'+BY(fPct).toFixed(1)+'" r="3.5" fill="#b3261e"/>';
+    bu+='<line x1="'+BX(today).toFixed(1)+'" y1="'+bpT+'" x2="'+BX(today).toFixed(1)+'" y2="'+(BH-bpB)+'" stroke="#1E6FE0" stroke-width="1.2" stroke-dasharray="3,2"/><text x="'+BX(today).toFixed(1)+'" y="'+(bpT-4)+'" font-size="9" fill="#1E6FE0" text-anchor="middle">today</text>';
+    bu+='<line x1="'+BX(GATE).toFixed(1)+'" y1="'+bpT+'" x2="'+BX(GATE).toFixed(1)+'" y2="'+(BH-bpB)+'" stroke="#C0392B" stroke-width="1.4"/><text x="'+BX(GATE).toFixed(1)+'" y="'+(bpT-4)+'" font-size="9" fill="#C0392B" text-anchor="middle">'+GLABEL+'</text>';
+    bu+='</svg>';
+    bu='<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:4px">'
+      +'<span><span style="display:inline-block;width:14px;height:2px;background:#5b6b82;vertical-align:middle"></span> Planned</span>'
+      +'<span><span style="display:inline-block;width:14px;height:3px;background:#2f7d32;vertical-align:middle"></span> Actual to today</span>'
+      +'<span><span style="display:inline-block;width:14px;border-top:2px dashed #b3261e;vertical-align:middle"></span> Forecast at current pace</span></div>'+bu;
+  }
   // ----- Visual 3: table, all deliverables, critical flagged -----
   var tb='<table><thead><tr><th>Deliverable</th><th style="text-align:center">Critical</th><th>Owner</th><th style="width:120px">% Complete</th><th style="text-align:center">Done/Total</th><th style="text-align:center">Due</th><th style="text-align:center">Late / behind</th><th style="text-align:center">Slack to gate</th><th style="text-align:center">RAG</th></tr></thead><tbody>';
   rows.forEach(function(r){
@@ -1114,6 +1148,7 @@ function buildEnh(plan, jira){
   tb+='</tbody></table>';
   host.innerHTML='<div class="panel"><h2>Deliverables &mdash; All 16, Critical Highlighted</h2><div class="sub">Every deliverable with percent complete, committed due and a late/behind indicator &middot; the five critical (D1, D3, D4, D9, D12) are highlighted</div>'+grid+'</div>'
     +'<div class="panel" style="margin-top:14px"><h2>Timeline &mdash; All Deliverables</h2><div class="sub">Runway to each committed due date &middot; critical bold, others dimmed &middot; red dot = overdue &middot; blue = today &middot; red line = '+GLABEL+' gate</div>'+g+'</div>'
+    +(bu?'<div class="panel" style="margin-top:14px"><h2>Burn-up &mdash; Planned vs Actual</h2><div class="sub">Cumulative percent of all deliverable work complete over time &middot; task-weighted &middot; planned rises as each due date passes &middot; dashed = forecast at the current pace to the '+GLABEL+' gate</div>'+bu+'</div>':'')
     +'<div class="panel" style="margin-top:14px"><h2>Deliverables &mdash; Due, Late/Behind and Slack</h2><div class="sub">All deliverables ranked D1 to D16 &middot; critical rows shaded and flagged &#9670;</div>'+tb
     +'<div class="note">Late/behind: "Nd late" = committed due passed and not complete; "behind" = amber or red but not yet overdue; "Nd left" = days remaining and on track; "done" = complete. Slack to gate is days between the committed due and the '+GLABEL+' gate. Critical deliverables are D1, D3, D4, D9, D12.</div></div>';
  })();
