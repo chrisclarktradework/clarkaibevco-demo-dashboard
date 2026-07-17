@@ -548,16 +548,12 @@ function render(bill, risks, plan, jira){
    if(t){__mb.innerHTML=WHY[t.getAttribute('data-info')]||''; __md.classList.add('show'); return;}
    if(e.target.classList.contains('modal-x')||e.target===__md) __md.classList.remove('show');});
 
- $("#x-overview").innerHTML=`<div style="margin:0 0 14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(16,35,59,.18);border:1px solid #c2cede"><img src="img/hero-lineup.jpg" alt="ClarkAI Beverage Co master product display" style="width:100%;display:block" loading="eager"></div><div class="panel"><h2>18-Month Program Timeline</h2><div class="sub">18-month Robot Fuel rollout · month 9 of 18 · click any milestone for its summary</div>${timeline()}<div id="weekStrip" style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0">${WEEKS.map((w,i)=>`<button class="wkchip${i===curIdx?' wk-active':''}" data-wk="${i}">${w.wk.replace('Week ','Wk ')}</button>`).join('')}</div><div id="weekSummary" style="margin-top:11px;padding:12px 14px;background:var(--bg-surface);border:1px solid var(--border-lt);border-radius:6px">${weekHTML(curIdx)}</div></div>
- <div class="grid g4 mt">
-  <div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
+ $("#x-overview").innerHTML=`<div style="display:grid;grid-template-columns:340px 1fr;gap:12px;align-items:stretch"><div class="panel"><h2>Control Tower</h2><div class="sub">The fleet keeps watch</div><img src="img/hero-lineup.jpg" alt="ClarkAI robot lineup" style="width:100%;border-radius:7px;display:block"></div><div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
+  </div><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;margin-top:14px"><div class="panel"><h2>Executive Summary</h2><div class="sub">Robot Fuel Platform · Month 9 of 18</div><p class="exec">${REF.exec}</p></div>
   <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#16273c',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
   <div class="panel good">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Budget${why('budget')}</h2><div class="sub">Fixed price</div><div class="kpi sm">${money(REF.byrnePlannedToDate)}</div><div class="kpi-lbl">ClarkAI cost to date (on plan)</div><div class="note">of ${money(REF.bac)} · ${money(REF.perMonth)}/mo × ${REF.months}. Positronic Partners effort delivered: ${money(ac)}.</div></div>
-  <div class="panel bad">${srcLink(LINKS.ssRisk,'Risk Log','ss')}<h2>Risk${why('riskrag')}</h2><div class="sub">Open register</div><div style="display:flex;gap:14px"><div><div class="kpi sm" style="color:var(--bad-br)">${red}</div><div class="kpi-lbl">Red</div></div><div><div class="kpi sm" style="color:var(--warn)">${amber}</div><div class="kpi-lbl">Amber</div></div><div><div class="kpi sm" style="color:var(--good)">${green}</div><div class="kpi-lbl">Green</div></div></div><div class="note">${severe} at severity 8+.</div></div>
- </div>
- <div class="grid g2 mt"><div class="panel"><h2>Executive Summary</h2><div class="sub">Robot Fuel Platform · Month 9 of 18</div><p class="exec">${REF.exec}</p></div>
-  <div class="panel"><h2>Effort vs Fixed Price</h2><div class="sub">Diagnostic</div>
-   <div class="note" style="font-size:12px;color:var(--text-muted)">ClarkAI pays a fixed ${money(REF.perMonth)}/month. Positronic Partners + Cyberdyne Systems effort to date (hours × $${REF.rate}) totals <b style="color:var(--cream)">${money(ac)}</b> across ${consList.length} consultants — roughly in line with the prorated ${money(REF.byrnePlannedToDate)} cash plan. Hours are a SWAG (Consultant A 40h/wk, all other consultants 20h/wk, Metal Men: Platinum 0h) pending bi-monthly actuals — informational, not a ClarkAI budget risk.</div></div>
+  </div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px"><div class="panel"><h2>Effort vs Fixed Price</h2><div class="sub">Diagnostic</div>
+   <div class="note" style="font-size:12px;color:var(--text-muted)">ClarkAI pays a fixed ${money(REF.perMonth)}/month. Positronic Partners + Cyberdyne Systems effort to date (hours × $${REF.rate}) totals <b style="color:var(--cream)">${money(ac)}</b> across ${consList.length} consultants — roughly in line with the prorated ${money(REF.byrnePlannedToDate)} cash plan. Hours are a SWAG (Consultant A 40h/wk, all other consultants 20h/wk, Metal Men: Platinum 0h) pending bi-monthly actuals — informational, not a ClarkAI budget risk.</div></div><div class="panel bad">${srcLink(LINKS.ssRisk,'Risk Log','ss')}<h2>Risk${why('riskrag')}</h2><div class="sub">Open register</div><div style="display:flex;gap:14px"><div><div class="kpi sm" style="color:var(--bad-br)">${red}</div><div class="kpi-lbl">Red</div></div><div><div class="kpi sm" style="color:var(--warn)">${amber}</div><div class="kpi-lbl">Amber</div></div><div><div class="kpi sm" style="color:var(--good)">${green}</div><div class="kpi-lbl">Green</div></div></div><div class="note">${severe} at severity 8+.</div></div></div><div style="margin-top:14px"><div class="panel"><h2>18-Month Program Timeline</h2><div class="sub">18-month Robot Fuel rollout · month 9 of 18 · click any milestone for its summary</div>${timeline()}<div id="weekStrip" style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0">${WEEKS.map((w,i)=>`<button class="wkchip${i===curIdx?' wk-active':''}" data-wk="${i}">${w.wk.replace('Week ','Wk ')}</button>`).join('')}</div><div id="weekSummary" style="margin-top:11px;padding:12px 14px;background:var(--bg-surface);border:1px solid var(--border-lt);border-radius:6px">${weekHTML(curIdx)}</div></div>
  </div>`;
 
  $("#x-status").innerHTML=`<div class="grid g3">
@@ -1199,8 +1195,8 @@ function buildEnh(plan, jira){
 
  
  window.__BGPCT={"D1":100,"D2":100,"D3":100,"D4":100,"D5":100,"D6":100,"D7":100,"D8":60,"D9":30,"D10":55,"D11":40,"D12":10,"D13":60,"D14":40,"D15":15,"D16":20};
-/* ================= ERAG / BRAG two-lens injector (additive, post-render) ================= */
- (function(){
+/* ================= ERAG / BRAG two-lens injector (additive, post-render, re-runnable) ================= */
+ window.__bragify=function(){
   var seed=window.__RAGSEED; if(!seed) return;
   var BG=window.__BGPCT||{}; if(!Object.keys(BG).length) return;
   function money(v){return '$'+Math.round(v).toLocaleString();}
@@ -1242,14 +1238,14 @@ function buildEnh(plan, jira){
   var STAMP='self-assessed &middot; tracker 16 Jul';
   var DELTA='<div class="note" style="margin-top:8px">BRAG '+score+'/10 vs ERAG '+Escore+'/10 = '+(delta>=0?'+':'')+delta+'. Only the deliverable completion input differs ('+bgComb+'% assessed vs '+Ecomb+'% task-count); risk and cost are identical. '+STAMP+'.</div>';
   function wrapSub(pane,bragHTML){
-    if(!pane) return;
+    if(!pane||pane.querySelector('[data-bragbar]')) return;
     var orig=[].slice.call(pane.children);
     var bbar=document.createElement('div');
-    bbar.style.cssText='display:flex;gap:7px;border-bottom:1px solid var(--border-lt);margin-bottom:13px;padding-bottom:9px';
+    bbar.setAttribute('data-bragbar','1');bbar.style.cssText='display:flex;gap:7px;border-bottom:1px solid var(--border-lt);margin-bottom:13px;padding-bottom:9px';
     bbar.innerHTML='<button class="tsb active" data-lens="e">ERAG &middot; Evidence</button><button class="tsb" data-lens="b">BRAG &middot; Best Guess</button>';
     var bWrap=document.createElement('div'); bWrap.style.display='none'; bWrap.innerHTML=bragHTML;
     pane.insertBefore(bbar,pane.firstChild); pane.appendChild(bWrap);
-    function show(k){orig.forEach(function(el){el.style.display=(k==='e')?'':'none';});bWrap.style.display=(k==='b')?'':'none';}
+    function show(k){orig.forEach(function(el){if(el.__origDisp===undefined)el.__origDisp=el.style.display;el.style.display=(k==='e')?el.__origDisp:'none';});bWrap.style.display=(k==='b')?'':'none';}
     bbar.querySelectorAll('button').forEach(function(btn){btn.onclick=function(){bbar.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});btn.classList.add('active');show(btn.getAttribute('data-lens'));};});
     show('e');
   }
@@ -1288,8 +1284,8 @@ function buildEnh(plan, jira){
   wrapSub(document.getElementById('x-budget'),evB);
   /* ---- Deliverables tab: Best Guess % column ---- */
   var dl=document.getElementById('x-deliverables');
-  if(dl){var tb2=dl.querySelector('table');
-    if(tb2){var hr=tb2.querySelector('thead tr');
+  if(dl){var tb2=dl.querySelector('table'); if(tb2&&tb2.getAttribute('data-bgcol')) tb2=null;
+    if(tb2){tb2.setAttribute('data-bgcol','1');var hr=tb2.querySelector('thead tr');
       if(hr){var th=document.createElement('th'); th.style.cssText='width:92px;text-align:center'; th.innerHTML='Best Guess %'; hr.appendChild(th);}
       tb2.querySelectorAll('tbody tr').forEach(function(tr){
         var dd=tr.getAttribute('data-d'); var t2=(String(dd||'').match(/^D\d+/)||[])[0];
@@ -1299,7 +1295,8 @@ function buildEnh(plan, jira){
       nt.innerHTML='Best Guess % is the owner self-assessed completion from the 17 Deliverables Tracker (BRAG), 16 Jul; sub-deliverables show their parent rollup. Status is evidence-based.';
       tb2.parentNode.appendChild(nt);}}
   if(window.__cpRender) window.__cpRender('e');
- })();
+ };
+ window.__bragify();
 
  /* ---- one delegated handler for sub-tabs + expanders ---- */
  if(!window.__ENH_CLICK){ window.__ENH_CLICK=1;
