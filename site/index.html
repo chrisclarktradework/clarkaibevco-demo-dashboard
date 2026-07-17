@@ -550,7 +550,7 @@ function render(bill, risks, plan, jira){
 
  $("#x-overview").innerHTML=`<div style="margin:0 0 14px;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(16,35,59,.18);border:1px solid #c2cede"><img src="img/hero-lineup.jpg" alt="ClarkAI Beverage Co master product display" style="width:100%;display:block" loading="eager"></div><div class="panel"><h2>18-Month Program Timeline</h2><div class="sub">18-month Robot Fuel rollout · month 9 of 18 · click any milestone for its summary</div>${timeline()}<div id="weekStrip" style="display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 0">${WEEKS.map((w,i)=>`<button class="wkchip${i===curIdx?' wk-active':''}" data-wk="${i}">${w.wk.replace('Week ','Wk ')}</button>`).join('')}</div><div id="weekSummary" style="margin-top:11px;padding:12px 14px;background:var(--bg-surface);border:1px solid var(--border-lt);border-radius:6px">${weekHTML(curIdx)}</div></div>
  <div class="grid g4 mt">
-  <div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Objective RAG · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
+  <div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
   <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#16273c',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
   <div class="panel good">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Budget${why('budget')}</h2><div class="sub">Fixed price</div><div class="kpi sm">${money(REF.byrnePlannedToDate)}</div><div class="kpi-lbl">ClarkAI cost to date (on plan)</div><div class="note">of ${money(REF.bac)} · ${money(REF.perMonth)}/mo × ${REF.months}. Positronic Partners effort delivered: ${money(ac)}.</div></div>
   <div class="panel bad">${srcLink(LINKS.ssRisk,'Risk Log','ss')}<h2>Risk${why('riskrag')}</h2><div class="sub">Open register</div><div style="display:flex;gap:14px"><div><div class="kpi sm" style="color:var(--bad-br)">${red}</div><div class="kpi-lbl">Red</div></div><div><div class="kpi sm" style="color:var(--warn)">${amber}</div><div class="kpi-lbl">Amber</div></div><div><div class="kpi sm" style="color:var(--good)">${green}</div><div class="kpi-lbl">Green</div></div></div><div class="note">${severe} at severity 8+.</div></div>
@@ -561,10 +561,10 @@ function render(bill, risks, plan, jira){
  </div>`;
 
  $("#x-status").innerHTML=`<div class="grid g3">
-  <div class="panel ${overallCls}"><h2>Objective RAG${why('overall')}</h2><div class="sub">Composite score ${score10} / 10</div>${ragWidget(overall,score10)}<div class="note">Seven measures scored 0–10 (10 best), each × its weight, then averaged. Bands: 8 = Light Green · 4–7 = Amber band · 0–3 = Red band.</div></div>
+  <div class="panel ${overallCls}"><h2>Evidence RAG (ERAG)${why('overall')}</h2><div class="sub">Composite score ${score10} / 10</div>${ragWidget(overall,score10)}<div class="note">Seven measures scored 0–10 (10 best), each × its weight, then averaged. Bands: 8 = Light Green · 4–7 = Amber band · 0–3 = Red band.</div></div>
   <div class="panel" style="grid-column:span 2"><h2>RAG Inputs (live)</h2><div class="sub">The six weighted measures</div>
    ${inputs.map(i=>`<div class="rag-input"><div><b style="color:var(--cream)">${i.k}</b><br><span class="note" style="margin:0">${i.v}</span></div><div style="display:flex;align-items:center">${ragTag(ragOf(i.s))}${why(i.key)}</div></div>`).join("")}</div></div>
-  <div class="panel mt"><h2>How the RAG is calculated</h2><div class="sub">Objective thresholds</div>
+  <div class="panel mt"><h2>How the RAG is calculated</h2><div class="sub">Evidence thresholds</div>
    <table><thead><tr><th>Measure</th><th>Weight</th><th>Score /10</th><th>Band</th><th>Rule</th></tr></thead><tbody>
    ${MEASURES.map(m=>`<tr><td><b style="color:var(--cream)">${m.k}</b></td><td>${m.w}</td><td>${m.s}</td><td>${bandTag(m.s)}</td><td class="note" style="margin:0">${m.rule}</td></tr>`).join("")}
    </tbody></table>
@@ -768,7 +768,7 @@ function render(bill, risks, plan, jira){
   <div style="font-family:Georgia,serif;font-size:12px;letter-spacing:.22em;color:var(--gold);text-transform:uppercase">Organizational Change Management</div>
   <div style="font-family:Georgia,serif;font-size:42px;color:var(--cream);margin:16px 0 8px">Coming Soon</div>
   <div class="note" style="font-size:13px;max-width:520px;margin:0 auto">The OCM dashboard — adoption, change-readiness, training coverage and stakeholder engagement metrics — is in development.</div></div>`;
- $("#x-weekly").innerHTML=`<div class="grid g2"><div class="panel"><h2>Weekly Status</h2><div class="sub">Robot Fuel Platform · Month 9 of 18 · PM Consultant A</div><p class="exec">${REF.exec}</p><div class="note mt">Positronic Partners self-report: <span class="tag-rag rag-green">ON TRACK</span> · ClarkAI objective rating: ${ragTag(overall)} (score ${score10}/10)</div></div>
+ $("#x-weekly").innerHTML=`<div class="grid g2"><div class="panel"><h2>Weekly Status</h2><div class="sub">Robot Fuel Platform · Month 9 of 18 · PM Consultant A</div><p class="exec">${REF.exec}</p><div class="note mt">Positronic Partners self-report: <span class="tag-rag rag-green">ON TRACK</span> · ClarkAI evidence rating: ${ragTag(overall)} (score ${score10}/10)</div></div>
   <div class="panel"><h2>Watch Points</h2><div class="sub">This week</div><table><tbody>
    <tr><td><b style="color:var(--bad-br)">●</b> Inventory sync (WMS↔Fusion)</td><td class="mini">Cyberdyne Systems on-site Jun 30</td></tr>
    <tr><td><b style="color:var(--warn)">●</b> SOW execution</td><td class="mini">Finalize and sign</td></tr>
@@ -1050,9 +1050,11 @@ function buildEnh(plan, jira){
   ORDER.sort(function(a,b){return (+a.slice(1))-(+b.slice(1));});
   function pill(txt,col){return '<span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:'+col+'22;color:'+col+';border:1px solid '+col+'55;white-space:nowrap">'+txt+'</span>';}
   function bark(pct,col){return '<div style="height:9px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:'+col+'"></i></div>';}
+  function cpRender(LENS){
+  var BGm=window.__BGPCT||{};
   var rows=ORDER.map(function(d){
     var a=A[d]||{}; var t=(a.ssT||0)+(a.jT||0), dn=(a.ssD||0)+(a.jD||0);
-    var pct=pctOf(dn,t); var rag=ragOf(a); var over=(a.ssOver||0)+(a.jOver||0);
+    var pct=(LENS==='b'&&BGm[d]!=null)?Math.round(BGm[d]):pctOf(dn,t); var rag=ragOf(a); var over=(a.ssOver||0)+(a.jOver||0);
     var due=DUE[d]||null; var dtd=due?db(today,due):null;
     var slack=due?db(due,GATE):null;
     var state,scol;
@@ -1100,6 +1102,7 @@ function buildEnh(plan, jira){
   // ----- Visual: burn-up line (planned vs actual vs forecast) -----
   var bTotT=0,bTotD=0; rows.forEach(function(r){bTotT+=r.t;bTotD+=r.dn;});
   var actPct=bTotT?(bTotD/bTotT*100):0;
+  if(LENS==='b'){var _bn=0,_bd=0; rows.forEach(function(r){if(BGm[r.d]!=null){_bn+=BGm[r.d]*r.t;_bd+=r.t;}}); if(_bd) actPct=_bn/_bd;}
   var bsc=rows.filter(function(r){return r.t>0&&r.due;});
   var bu='';
   if(bsc.length){
@@ -1118,7 +1121,7 @@ function buildEnh(plan, jira){
     sorted.forEach(function(r){var x=BX(r.due);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);cum+=r.t;lastY=BY(cum/bTotT*100);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);});
     pp+=' L'+BX(bEnd).toFixed(1)+','+lastY.toFixed(1);
     bu+='<path d="'+pp+'" fill="none" stroke="#5b6b82" stroke-width="2"/>';
-    var hist=((window.__CPHIST||[]).map(function(h){return {t:new Date(String(h.date)+'T00:00:00'),p:+h.pct};}).filter(function(h){return !isNaN(h.t.getTime())&&h.t<=today;}));
+    var hist=(LENS==='b')?[]:((window.__CPHIST||[]).map(function(h){return {t:new Date(String(h.date)+'T00:00:00'),p:+h.pct};}).filter(function(h){return !isNaN(h.t.getTime())&&h.t<=today;}));
     hist.sort(function(a,b){return a.t-b.t;});
     var apath='M'+BX(bStart).toFixed(1)+','+BY(0).toFixed(1);
     hist.forEach(function(h){ if(h.t>=bStart) apath+=' L'+BX(h.t).toFixed(1)+','+BY(h.p).toFixed(1); });
@@ -1152,11 +1155,15 @@ function buildEnh(plan, jira){
       +'<td style="text-align:center">'+pill(r.rag,r.col)+'</td></tr>';
   });
   tb+='</tbody></table>';
-  host.innerHTML='<div class="panel"><h2>Deliverables &mdash; All 16, Critical Highlighted</h2><div class="sub">Every deliverable with percent complete, committed due and a late/behind indicator &middot; the five critical (D1, D3, D4, D9, D12) are highlighted</div>'+grid+'</div>'
+  var LB=(Object.keys(BGm).length)?('<div style="display:flex;gap:7px;border-bottom:1px solid var(--border-lt);margin-bottom:13px;padding-bottom:9px"><button class="tsb '+(LENS==='e'?'active':'')+'" onclick="__cpRender(\'e\')">ERAG &middot; Evidence</button><button class="tsb '+(LENS==='b'?'active':'')+'" onclick="__cpRender(\'b\')">BRAG &middot; Best Guess</button>'+(LENS==='b'?'<span style="font-size:11px;color:var(--text-dim);align-self:center;margin-left:8px">percentages are owner self-assessed (tracker 16 Jul) &middot; RAG chips remain evidence-based</span>':'')+'</div>'):'';
+  host.innerHTML=LB+'<div class="panel"><h2>Deliverables &mdash; All 16, Critical Highlighted</h2><div class="sub">Every deliverable with percent complete, committed due and a late/behind indicator &middot; the five critical (D1, D3, D4, D9, D12) are highlighted</div>'+grid+'</div>'
     +'<div class="panel" style="margin-top:14px"><h2>Timeline &mdash; All Deliverables</h2><div class="sub">Runway to each committed due date &middot; critical bold, others dimmed &middot; red dot = overdue &middot; blue = today &middot; red line = '+GLABEL+' gate</div>'+g+'</div>'
     +(bu?'<div class="panel" style="margin-top:14px"><h2>Burn-up &mdash; Planned vs Actual</h2><div class="sub">Cumulative percent of all deliverable work complete over time &middot; task-weighted &middot; planned rises as each due date passes &middot; dashed = forecast at the current pace to the '+GLABEL+' gate</div>'+bu+'</div>':'')
     +'<div class="panel" style="margin-top:14px"><h2>Deliverables &mdash; Due, Late/Behind and Slack</h2><div class="sub">All deliverables ranked D1 to D16 &middot; critical rows shaded and flagged &#9670;</div>'+tb
     +'<div class="note">Late/behind: "Nd late" = committed due passed and not complete; "behind" = amber or red but not yet overdue; "Nd left" = days remaining and on track; "done" = complete. Slack to gate is days between the committed due and the '+GLABEL+' gate. Critical deliverables are D1, D3, D4, D9, D12.</div></div>';
+  }
+
+  window.__cpRender=cpRender; cpRender('e');
  })();
  /* ---- SOW tab (additive) ---- */
  (function(){
@@ -1188,6 +1195,110 @@ function buildEnh(plan, jira){
         if(hit){hit.scrollIntoView({behavior:'smooth',block:'center'}); var oc=hit.style.backgroundColor; hit.style.transition='background-color .3s'; hit.style.backgroundColor='rgba(46,127,196,.4)'; setTimeout(function(){hit.style.backgroundColor=oc;},1700);}
      },130);
   });
+ })();
+
+ 
+ window.__BGPCT={"D1":100,"D2":100,"D3":100,"D4":100,"D5":100,"D6":100,"D7":100,"D8":60,"D9":30,"D10":55,"D11":40,"D12":10,"D13":60,"D14":40,"D15":15,"D16":20};
+/* ================= ERAG / BRAG two-lens injector (additive, post-render) ================= */
+ (function(){
+  var seed=window.__RAGSEED; if(!seed) return;
+  var BG=window.__BGPCT||{}; if(!Object.keys(BG).length) return;
+  function money(v){return '$'+Math.round(v).toLocaleString();}
+  var D=(typeof D_PLAN!=='undefined')?D_PLAN:[]; var J=(typeof D_JIRA!=='undefined')?D_JIRA:{};
+  function topD(c){var m=String(c||'').match(/^D(\d+)/);return m?('D'+m[1]):null;}
+  var TT={};
+  D.forEach(function(r){var d=topD(r['Deliverable ID']); if(d) TT[d]=(TT[d]||0)+1;});
+  ((J.issues)||[]).forEach(function(it){var d=topD(it.deliverable); if(d) TT[d]=(TT[d]||0)+1;});
+  var num=0,den=0; Object.keys(BG).forEach(function(d){var t=TT[d]||0; num+=BG[d]*t; den+=t;});
+  var bgComb=den?Math.round(num/den):0;
+  var BAC=seed.bac, AC=seed.ac, sf=seed.schedFrac, schedPct=seed.schedPct;
+  var PV=Math.round(sf*BAC), EV=Math.round(bgComb/100*BAC);
+  var SPI=PV?EV/PV:0, CPI=AC?EV/AC:0, TCPI=(BAC-AC)!==0?(BAC-EV)/(BAC-AC):0;
+  var EAC=CPI?Math.round(BAC/CPI):BAC, VAC=BAC-EAC, CV=EV-AC, SV=EV-PV;
+  var clamp10=function(x){return Math.max(0,Math.min(10,Math.round(x)));};
+  var idxScore=function(v){return clamp10((v-0.5)*20);};
+  var tcpiScore=function(v){return clamp10(10-(v-1.0)*40);};
+  var compRatio=sf?(bgComb/100)/sf:0;
+  var sRisk=seed.risk, sDeliv=seed.deliv;
+  var sComp=idxScore(compRatio), sSPI=idxScore(SPI), sVTC=sSPI, sCPI=idxScore(CPI), sTCPI=tcpiScore(TCPI);
+  var M=[
+   {k:'Open SteerCo risks',w:3.0,s:sRisk,v:seed.red+' Red &middot; '+seed.amber+' Amber open (severity-weighted)'},
+   {k:'Task completion vs schedule',w:2.5,s:sComp,v:bgComb+'% assessed vs '+schedPct+'% schedule elapsed &middot; ratio '+compRatio.toFixed(2)},
+   {k:'SPI &mdash; schedule (EVM)',w:0.9,s:sSPI,v:'SPI '+SPI.toFixed(2)+' &middot; EV '+money(EV)+' &divide; PV '+money(PV)},
+   {k:'VTC &mdash; velocity',w:0.9,s:sVTC,v:'provisional &middot; mirrors the schedule signal'},
+   {k:'Deliverable schedule',w:0.9,s:sDeliv,v:'baseline finish 24 Jul'},
+   {k:'CPI &mdash; cost efficiency',w:0.9,s:sCPI,v:'CPI '+CPI.toFixed(2)+' &middot; EV '+money(EV)+' &divide; AC '+money(AC)},
+   {k:'TCPI &mdash; cost forecast',w:0.9,s:sTCPI,v:'TCPI '+TCPI.toFixed(2)+' &middot; EAC '+money(EAC)}
+  ];
+  var wsum=M.reduce(function(a,m){return a+m.w*m.s;},0);
+  var score=Math.round(wsum/10);
+  var overall= score>=8?'Green': score>=4?'Amber':'Red';
+  var Ecomb=seed.combPct, Escore=seed.score, delta=score-Escore;
+  var RC={Green:'#2f7d32',Amber:'#2E7FC4',Red:'#b3261e'};
+  function band(s){s=+s;return s>=9?'GREEN':s>=8?'LIGHT GREEN':s>=6?'LIGHT AMBER':s>=4?'AMBER':s>=3?'LIGHT RED':'RED';}
+  var BANDCOL={'GREEN':['#2E8B3D','#fff'],'LIGHT GREEN':['#9CCC65','#245214'],'LIGHT AMBER':['#EAC85C','#5E4600'],'AMBER':['#C0871A','#fff'],'LIGHT RED':['#E8938A','#6E170F'],'RED':['#B83A2A','#fff']};
+  function bandTag(s){var nm=band(s),c=BANDCOL[nm];return '<span style="display:inline-block;padding:3px 12px;border-radius:5px;font-weight:700;background:'+c[0]+';color:'+c[1]+'">'+s+'/10 '+nm+'</span>';}
+  function bar(pct,col){return '<div style="height:10px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:'+col+'"></i></div>';}
+  var STAMP='self-assessed &middot; tracker 16 Jul';
+  var DELTA='<div class="note" style="margin-top:8px">BRAG '+score+'/10 vs ERAG '+Escore+'/10 = '+(delta>=0?'+':'')+delta+'. Only the deliverable completion input differs ('+bgComb+'% assessed vs '+Ecomb+'% task-count); risk and cost are identical. '+STAMP+'.</div>';
+  function wrapSub(pane,bragHTML){
+    if(!pane) return;
+    var orig=[].slice.call(pane.children);
+    var bbar=document.createElement('div');
+    bbar.style.cssText='display:flex;gap:7px;border-bottom:1px solid var(--border-lt);margin-bottom:13px;padding-bottom:9px';
+    bbar.innerHTML='<button class="tsb active" data-lens="e">ERAG &middot; Evidence</button><button class="tsb" data-lens="b">BRAG &middot; Best Guess</button>';
+    var bWrap=document.createElement('div'); bWrap.style.display='none'; bWrap.innerHTML=bragHTML;
+    pane.insertBefore(bbar,pane.firstChild); pane.appendChild(bWrap);
+    function show(k){orig.forEach(function(el){el.style.display=(k==='e')?'':'none';});bWrap.style.display=(k==='b')?'':'none';}
+    bbar.querySelectorAll('button').forEach(function(btn){btn.onclick=function(){bbar.querySelectorAll('button').forEach(function(x){x.classList.remove('active');});btn.classList.add('active');show(btn.getAttribute('data-lens'));};});
+    show('e');
+  }
+  /* ---- Overview ---- */
+  var ovB='<div class="panel"><h2>Overall Status &mdash; Best Guess (BRAG)</h2><div class="sub">'+STAMP+'</div>'
+    +'<div style="text-align:center;margin:10px 0"><span class="big-rag" style="color:'+RC[overall]+'">'+overall.toUpperCase()+'</span></div>'
+    +'<div style="text-align:center">'+bandTag(score)+'</div>'+DELTA+'</div>'
+    +'<div class="panel" style="margin-top:14px"><h2>Task Completion &mdash; Best Guess</h2><div class="sub">Assessed completion (tracker) vs schedule elapsed</div>'
+    +'<div class="kpi">'+bgComb+'%</div><div class="kpi-lbl">assessed complete &middot; '+schedPct+'% schedule elapsed</div>'
+    +'<div style="margin-top:8px">'+bar(bgComb,RC[overall])+'</div>'
+    +'<div class="note" style="margin-top:8px">Evidence (task-count) reads '+Ecomb+'%. The evidence view is the default; this is the owner self-assessment.</div></div>';
+  wrapSub(document.getElementById('x-overview'),ovB);
+  /* ---- Status & RAG ---- */
+  var mrows=M.map(function(m){var c=(m.s>=8?'#2f7d32':m.s>=4?'#2E7FC4':'#b3261e');
+    return '<tr><td>'+m.k+'</td><td style="text-align:center">'+m.w.toFixed(1)+'</td><td style="text-align:center;color:'+c+';font-weight:700">'+m.s+'/10</td><td class="mini">'+m.v+'</td></tr>';}).join('');
+  var stB='<div class="panel"><h2>Best-Guess RAG (BRAG)</h2><div class="sub">Same weighted model, deliverable completion from the tracker &middot; '+STAMP+'</div>'
+    +'<div style="text-align:center;margin:10px 0"><span class="big-rag" style="color:'+RC[overall]+'">'+overall.toUpperCase()+'</span> &nbsp; '+bandTag(score)+'</div>'+DELTA+'</div>'
+    +'<div class="panel" style="margin-top:14px"><h2>BRAG Inputs</h2><div class="sub">7 measures &middot; weight &times; score &middot; only completion differs from ERAG</div>'
+    +'<table><thead><tr><th>Measure</th><th style="text-align:center">Weight</th><th style="text-align:center">Score</th><th>Basis</th></tr></thead><tbody>'+mrows+'</tbody></table>'
+    +'<div class="note">Weighted score = &Sigma;(weight &times; score) &divide; 10 = '+score+'/10. Bands: 0&ndash;2 Red &middot; 4&ndash;5 Amber &middot; 8&ndash;10 Green. Risk and the EVM cost inputs are identical to ERAG; only the completion-driven measures move.</div></div>';
+  wrapSub(document.getElementById('x-status'),stB);
+  /* ---- EVM ---- */
+  function mc(lbl,val,sub){return '<div class="panel"><h2>'+lbl+'</h2><div class="kpi sm">'+val+'</div><div class="kpi-lbl">'+(sub||'')+'</div></div>';}
+  var evB='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px">'
+    +mc('BAC',money(BAC),'fixed price')
+    +mc('Earned Value',money(EV),bgComb+'% assessed &times; BAC')
+    +mc('Planned Value',money(PV),schedPct+'% schedule')
+    +mc('Effort (AC)',money(AC),'actual to date')
+    +mc('SPI',SPI.toFixed(2),'EV &divide; PV')
+    +mc('CPI',CPI.toFixed(2),'EV &divide; AC')
+    +mc('Schedule Variance',(SV<0?'-':'')+money(Math.abs(SV)),'EV &minus; PV')
+    +mc('Cost Variance',(CV<0?'-':'')+money(Math.abs(CV)),'EV &minus; AC')
+    +mc('EAC',money(EAC),'BAC &divide; CPI')
+    +mc('TCPI',TCPI.toFixed(2),'to finish on budget')
+    +'</div><div class="panel" style="margin-top:14px"><h2>Best Guess EVM</h2><div class="note">Earned Value uses the tracker&rsquo;s assessed completion ('+bgComb+'%) instead of task-count completion ('+Ecomb+'%). '+STAMP+'. Every figure therefore reads more favourably than the evidence EVM; risk and actual cost are unchanged.</div></div>';
+  wrapSub(document.getElementById('x-budget'),evB);
+  /* ---- Deliverables tab: Best Guess % column ---- */
+  var dl=document.getElementById('x-deliverables');
+  if(dl){var tb2=dl.querySelector('table');
+    if(tb2){var hr=tb2.querySelector('thead tr');
+      if(hr){var th=document.createElement('th'); th.style.cssText='width:92px;text-align:center'; th.innerHTML='Best Guess %'; hr.appendChild(th);}
+      tb2.querySelectorAll('tbody tr').forEach(function(tr){
+        var dd=tr.getAttribute('data-d'); var t2=(String(dd||'').match(/^D\d+/)||[])[0];
+        var v=(t2&&BG[t2]!=null)?('<b style="color:var(--gold-br)">'+BG[t2]+'%</b>'):'<span style="color:var(--text-dim)">&mdash;</span>';
+        var td=document.createElement('td'); td.style.textAlign='center'; td.innerHTML=v; tr.appendChild(td);});
+      var nt=document.createElement('div'); nt.className='note';
+      nt.innerHTML='Best Guess % is the owner self-assessed completion from the 17 Deliverables Tracker (BRAG), 16 Jul; sub-deliverables show their parent rollup. Status is evidence-based.';
+      tb2.parentNode.appendChild(nt);}}
+  if(window.__cpRender) window.__cpRender('e');
  })();
 
  /* ---- one delegated handler for sub-tabs + expanders ---- */
