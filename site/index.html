@@ -548,7 +548,7 @@ function render(bill, risks, plan, jira){
    if(t){__mb.innerHTML=WHY[t.getAttribute('data-info')]||''; __md.classList.add('show'); return;}
    if(e.target.classList.contains('modal-x')||e.target===__md) __md.classList.remove('show');});
 
- $("#x-overview").innerHTML=`<div style="display:grid;grid-template-columns:340px 1fr;gap:12px;align-items:stretch"><div class="panel"><h2>Control Tower</h2><div class="sub">The fleet keeps watch</div><img src="img/hero-lineup.jpg" alt="ClarkAI robot lineup" style="width:100%;border-radius:7px;display:block"></div><div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
+ $("#x-overview").innerHTML=`<div style="display:grid;grid-template-columns:430px 1fr;gap:12px;align-items:stretch"><div class="panel"><h2>Control Tower</h2><div class="sub">The fleet keeps watch</div><img src="img/hero-lineup.jpg" alt="ClarkAI robot lineup" style="width:100%;border-radius:7px;display:block"></div><div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
   </div><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;margin-top:14px"><div class="panel"><h2>Executive Summary</h2><div class="sub">Robot Fuel Platform · Month 9 of 18</div><p class="exec">${REF.exec}</p></div>
   <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#16273c',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
   <div class="panel good">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Budget${why('budget')}</h2><div class="sub">Fixed price</div><div class="kpi sm">${money(REF.byrnePlannedToDate)}</div><div class="kpi-lbl">ClarkAI cost to date (on plan)</div><div class="note">of ${money(REF.bac)} · ${money(REF.perMonth)}/mo × ${REF.months}. Positronic Partners effort delivered: ${money(ac)}.</div></div>
@@ -1235,6 +1235,11 @@ function buildEnh(plan, jira){
   var BANDCOL={'GREEN':['#2E8B3D','#fff'],'LIGHT GREEN':['#9CCC65','#245214'],'LIGHT AMBER':['#EAC85C','#5E4600'],'AMBER':['#C0871A','#fff'],'LIGHT RED':['#E8938A','#6E170F'],'RED':['#B83A2A','#fff']};
   function bandTag(s){var nm=band(s),c=BANDCOL[nm];return '<span style="display:inline-block;padding:3px 12px;border-radius:5px;font-weight:700;background:'+c[0]+';color:'+c[1]+'">'+s+'/10 '+nm+'</span>';}
   function bar(pct,col){return '<div style="height:10px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:'+col+'"></i></div>';}
+  var WHYTXT='BRAG (Best Guess RAG) uses the same seven weighted measures as ERAG, but the deliverable completion input is the owner self-assessed percent from the Smartsheet "17 Deliverables Tracker (BRAG)" (task-weighted average) instead of counted Done tasks. Because Earned Value = completion times budget, SPI, CPI, TCPI and EAC reflow from the same substitution. Risk and actual cost inputs are identical to ERAG. These percentages are management judgment, not task evidence; the delta versus ERAG shows where self-assessment runs ahead of task closure.';
+  var _whyN=0;
+  function whyChip(){_whyN++;var id='bragwhy'+_whyN;
+    return {chip:'<span style="display:inline-block;border:1px solid var(--border-lt);border-radius:10px;font-size:9.5px;padding:2px 8px;cursor:pointer;color:var(--text-dim);vertical-align:middle;margin-left:6px" onclick="var x=document.getElementById(\''+id+'\');x.style.display=(x.style.display===\'none\')?\'\':\'none\'">&#9432; WHY?</span>',
+      box:'<div id="'+id+'" style="display:none" class="note">'+WHYTXT+'</div>'};}
   var STAMP='self-assessed &middot; tracker 16 Jul';
   var DELTA='<div class="note" style="margin-top:8px">BRAG '+score+'/10 vs ERAG '+Escore+'/10 = '+(delta>=0?'+':'')+delta+'. Only the deliverable completion input differs ('+bgComb+'% assessed vs '+Ecomb+'% task-count); risk and cost are identical. '+STAMP+'.</div>';
   function wrapSub(pane,bragHTML){
@@ -1250,7 +1255,8 @@ function buildEnh(plan, jira){
     show('e');
   }
   /* ---- Overview ---- */
-  var ovB='<div class="panel"><h2>Overall Status &mdash; Best Guess (BRAG)</h2><div class="sub">'+STAMP+'</div>'
+  var _w1=whyChip();
+  var ovB='<div class="panel"><h2>Overall Status &mdash; Best Guess (BRAG)'+_w1.chip+'</h2><div class="sub">'+STAMP+'</div>'+_w1.box
     +'<div style="text-align:center;margin:10px 0"><span class="big-rag" style="color:'+RC[overall]+'">'+overall.toUpperCase()+'</span></div>'
     +'<div style="text-align:center">'+bandTag(score)+'</div>'+DELTA+'</div>'
     +'<div class="panel" style="margin-top:14px"><h2>Task Completion &mdash; Best Guess</h2><div class="sub">Assessed completion (tracker) vs schedule elapsed</div>'
@@ -1261,11 +1267,34 @@ function buildEnh(plan, jira){
   /* ---- Status & RAG ---- */
   var mrows=M.map(function(m){var c=(m.s>=8?'#2f7d32':m.s>=4?'#2E7FC4':'#b3261e');
     return '<tr><td>'+m.k+'</td><td style="text-align:center">'+m.w.toFixed(1)+'</td><td style="text-align:center;color:'+c+';font-weight:700">'+m.s+'/10</td><td class="mini">'+m.v+'</td></tr>';}).join('');
-  var stB='<div class="panel"><h2>Best-Guess RAG (BRAG)</h2><div class="sub">Same weighted model, deliverable completion from the tracker &middot; '+STAMP+'</div>'
+  var _w2=whyChip();
+  var stB='<div class="panel"><h2>Best-Guess RAG (BRAG)'+_w2.chip+'</h2><div class="sub">Same weighted model, deliverable completion from the tracker &middot; '+STAMP+'</div>'+_w2.box
     +'<div style="text-align:center;margin:10px 0"><span class="big-rag" style="color:'+RC[overall]+'">'+overall.toUpperCase()+'</span> &nbsp; '+bandTag(score)+'</div>'+DELTA+'</div>'
     +'<div class="panel" style="margin-top:14px"><h2>BRAG Inputs</h2><div class="sub">7 measures &middot; weight &times; score &middot; only completion differs from ERAG</div>'
     +'<table><thead><tr><th>Measure</th><th style="text-align:center">Weight</th><th style="text-align:center">Score</th><th>Basis</th></tr></thead><tbody>'+mrows+'</tbody></table>'
     +'<div class="note">Weighted score = &Sigma;(weight &times; score) &divide; 10 = '+score+'/10. Bands: 0&ndash;2 Red &middot; 4&ndash;5 Amber &middot; 8&ndash;10 Green. Risk and the EVM cost inputs are identical to ERAG; only the completion-driven measures move.</div></div>';
+  var RW=window.__BGROWS||null; var bgTbl='';
+  if(RW&&RW.length){
+    var rws=RW.slice().sort(function(a,b){var na=parseInt(String(a.id).replace(/\D/g,''))||0,nb=parseInt(String(b.id).replace(/\D/g,''))||0;return na-nb||String(a.id).localeCompare(String(b.id));});
+    var trs=rws.map(function(r){
+      var p=Math.max(0,Math.min(100,Math.round(+r.pct||0)));
+      var pc=p>=100?'#2f7d32':p>=50?'#2E7FC4':'#b3261e';
+      var st=String(r.status||'');
+      var stc=/complete|accepted/i.test(st)?'#2f7d32':/review/i.test(st)?'#1c5a94':/block/i.test(st)?'#b3261e':'#2E7FC4';
+      return '<tr><td><b style="color:var(--cream)">'+r.id+'</b></td><td>'+(r.name||'')+'</td><td class="mini">'+(r.owner||'&mdash;')+'</td>'
+        +'<td><span style="display:inline-block;padding:2px 7px;border-radius:3px;font-size:10px;font-weight:700;background:'+stc+'22;color:'+stc+';border:1px solid '+stc+'55;white-space:nowrap">'+(st||'&mdash;')+'</span></td>'
+        +'<td style="min-width:110px"><div style="height:9px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+p+'%;background:'+pc+'"></i></div></td>'
+        +'<td style="text-align:center;font-weight:700;color:'+pc+'">'+p+'%</td>'
+        +'<td class="mini" style="white-space:nowrap">'+(r.start||'&mdash;')+'</td><td class="mini" style="white-space:nowrap">'+(r.finish||'&mdash;')+'</td>'
+        +'<td style="text-align:center">'+(r.critical?'<span style="color:var(--gold-br);font-weight:700">&#9670;</span>':'<span style="color:var(--text-dim)">&middot;</span>')+'</td>'
+        +'<td class="mini">'+(r.note||'')+'</td></tr>';}).join('');
+    bgTbl='<div class="panel" style="margin-top:14px"><h2>BRAG Deliverables &mdash; Tracker Detail</h2><div class="sub">Live from the Smartsheet "17 Deliverables Tracker (BRAG)" &middot; owner self-assessed &middot; '+STAMP+'</div>'
+      +'<table><thead><tr><th>ID</th><th>Deliverable</th><th>Owner</th><th>Status</th><th style="width:120px">% Complete</th><th style="text-align:center">%</th><th>Start</th><th>Finish</th><th style="text-align:center">Critical</th><th>Notes</th></tr></thead><tbody>'+trs+'</tbody></table>'
+      +'<div class="note">Detail rows ship with each data pull (daily build or the Refresh button). Percentages here are the same self-assessed values that drive the BRAG score above.</div></div>';
+  } else {
+    bgTbl='<div class="panel" style="margin-top:14px"><h2>BRAG Deliverables &mdash; Tracker Detail</h2><div class="note">Tracker detail loads with the next data pull (daily build or Refresh).</div></div>';
+  }
+  stB=stB+bgTbl;
   wrapSub(document.getElementById('x-status'),stB);
   /* ---- EVM ---- */
   function mc(lbl,val,sub){return '<div class="panel"><h2>'+lbl+'</h2><div class="kpi sm">'+val+'</div><div class="kpi-lbl">'+(sub||'')+'</div></div>';}
@@ -1324,6 +1353,7 @@ window.__SOWLABELS={p0:'Executed SOW',p1:'Positronic Proposed Next-Phase SOW'};
 window.__SOWMETA={p0:'Fully executed &middot; Positronic Partners LLC &middot; demonstration data (fictitious)',p1:'Proposal &middot; not executed &middot; demonstration data (fictitious)'};
 window.__CRITGATE='2026-08-12';window.__CRITGATELABEL='Stage 3 Gate';
 window.__CPHIST=[{"date": "2026-03-01", "pct": 0.0}, {"date": "2026-03-16", "pct": 4.5}, {"date": "2026-03-31", "pct": 10.0}, {"date": "2026-04-15", "pct": 15.9}, {"date": "2026-04-30", "pct": 22.2}, {"date": "2026-05-16", "pct": 28.6}, {"date": "2026-05-31", "pct": 35.3}, {"date": "2026-06-15", "pct": 42.2}, {"date": "2026-06-30", "pct": 49.2}, {"date": "2026-07-16", "pct": 56.3}];
+window.__BGROWS=[{"id": "D1", "name": "Current-state assessment: all 9 workstreams", "owner": "Data", "status": "Done", "pct": 100, "start": "", "finish": "1 Mar", "critical": true, "note": ""}, {"id": "D2", "name": "WS0 Business Case + Robot Fuel Incentive Proposal", "owner": "Metal Men: Gold", "status": "Done", "pct": 100, "start": "", "finish": "8 Mar", "critical": false, "note": ""}, {"id": "D3", "name": "Redwood readiness view + gap log", "owner": "HAL 9000", "status": "Done", "pct": 100, "start": "", "finish": "15 Mar", "critical": true, "note": ""}, {"id": "D4a", "name": "Integration map", "owner": "J.A.R.V.I.S.", "status": "Done", "pct": 100, "start": "", "finish": "20 Mar", "critical": true, "note": ""}, {"id": "D4b", "name": "Viscosity inventory sync analysis (2 options)", "owner": "Metal Men: Mercury", "status": "Done", "pct": 100, "start": "", "finish": "20 Mar", "critical": true, "note": ""}, {"id": "D5", "name": "Cutover hypothesis + blackout-safe sequencing", "owner": "Data", "status": "Done", "pct": 100, "start": "", "finish": "28 Mar", "critical": false, "note": ""}, {"id": "D6", "name": "Baseline team plan: named androids", "owner": "Optimus Prime", "status": "Done", "pct": 100, "start": "", "finish": "5 Apr", "critical": false, "note": ""}, {"id": "D7", "name": "Risk register (bottling-specific)", "owner": "Gort", "status": "Done", "pct": 100, "start": "", "finish": "12 Apr", "critical": false, "note": ""}, {"id": "D8", "name": "OCM assessment, change-readiness, AI governance", "owner": "Dolores Abernathy", "status": "Done", "pct": 60, "start": "", "finish": "19 Apr", "critical": false, "note": ""}, {"id": "D9a", "name": "Quick-wins backlog (v1)", "owner": "Number 5 (Johnny Five)", "status": "Done", "pct": 30, "start": "", "finish": "26 Apr", "critical": true, "note": ""}, {"id": "D9b", "name": "Viscosity accuracy demonstration", "owner": "Ash", "status": "In Progress", "pct": 30, "start": "", "finish": "2 Aug", "critical": true, "note": ""}, {"id": "D10", "name": "KPI baselines, targets, measurement method", "owner": "Maeve Millay", "status": "Done", "pct": 55, "start": "", "finish": "14 May", "critical": false, "note": ""}, {"id": "D11", "name": "Tooling + governance setup", "owner": "Cyborg (Victor Stone)", "status": "In Progress", "pct": 40, "start": "", "finish": "30 Jul", "critical": false, "note": ""}, {"id": "D12", "name": "Stage Gate acceptance", "owner": "Vision", "status": "In Progress", "pct": 10, "start": "", "finish": "12 Aug", "critical": true, "note": ""}, {"id": "D13", "name": "Detailed program plan + agile release plan", "owner": "Consultant A", "status": "In Progress", "pct": 60, "start": "", "finish": "9 Aug", "critical": false, "note": ""}, {"id": "D14", "name": "Security + privilege assessment", "owner": "Sentinel", "status": "In Progress", "pct": 40, "start": "", "finish": "23 Aug", "critical": false, "note": ""}, {"id": "D15", "name": "Positronic agent architecture proposal", "owner": "David 8", "status": "In Progress", "pct": 15, "start": "", "finish": "23 Aug", "critical": false, "note": ""}, {"id": "D16", "name": "Workstream HTML prototype", "owner": "Astro Boy", "status": "In Progress", "pct": 20, "start": "", "finish": "23 Aug", "critical": false, "note": ""}];
 window.__ASOF="2026-07-16"; render(D_BILL,D_RISKS,D_PLAN,D_JIRA);
 (function(){var mb=document.getElementById('modebanner'); if(mb){mb.className='modebar snap';mb.innerHTML='&#9679; DEMONSTRATION DATA &middot; ClarkAI Beverage Co &middot; fictitious &middot; 2026-07-16';}})();
 
