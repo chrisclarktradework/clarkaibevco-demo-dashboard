@@ -548,7 +548,8 @@ function render(bill, risks, plan, jira){
    if(t){__mb.innerHTML=WHY[t.getAttribute('data-info')]||''; __md.classList.add('show'); return;}
    if(e.target.classList.contains('modal-x')||e.target===__md) __md.classList.remove('show');});
 
- $("#x-overview").innerHTML=`<div style="display:grid;grid-template-columns:430px 1fr;gap:12px;align-items:stretch"><div class="panel"><h2>Control Tower</h2><div class="sub">The fleet keeps watch</div><img src="img/hero-lineup.jpg" alt="ClarkAI robot lineup" style="width:100%;border-radius:7px;display:block"></div><div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
+ window.__WHY=WHY;
+ $("#x-overview").innerHTML=`<div style="display:grid;grid-template-columns:3fr 2fr;gap:12px;align-items:stretch"><div class="panel"><h2>Control Tower</h2><div class="sub">The fleet keeps watch</div><img src="img/hero-lineup.jpg" alt="ClarkAI robot lineup" style="width:100%;border-radius:7px;display:block"></div><div class="panel ${overallCls}"><h2>Overall Status${why('overall')}</h2><div class="sub">Evidence RAG (ERAG) · score ${score10}/10</div>${ragWidget(overall,score10)}<div class="note">Computed from seven weighted measures (see Project Status &amp; RAG tab). Not self-reported.</div></div>
   </div><div style="display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:12px;margin-top:14px"><div class="panel"><h2>Executive Summary</h2><div class="sub">Robot Fuel Platform · Month 9 of 18</div><p class="exec">${REF.exec}</p></div>
   <div class="panel"><h2>Task Completion</h2><div class="sub">Jira + Smartsheet</div><div class="donut-wrap">${donut(combPct,'#16273c',110,'DONE')}<div><div class="kpi sm">${totDone}<span style="font-size:13px;color:var(--text-dim)"> / ${totTasks}</span></div><div class="note"><span class="chip jira">Jira ${jira.done}/${jira.total}</span><span class="chip ss">Plan ${ssDone}/${ssTot}</span></div></div></div></div>
   <div class="panel good">${srcLink(LINKS.ssBill,'Billings','ss')}<h2>Budget${why('budget')}</h2><div class="sub">Fixed price</div><div class="kpi sm">${money(REF.byrnePlannedToDate)}</div><div class="kpi-lbl">ClarkAI cost to date (on plan)</div><div class="note">of ${money(REF.bac)} · ${money(REF.perMonth)}/mo × ${REF.months}. Positronic Partners effort delivered: ${money(ac)}.</div></div>
@@ -1231,15 +1232,27 @@ function buildEnh(plan, jira){
   var overall= score>=8?'Green': score>=4?'Amber':'Red';
   var Ecomb=seed.combPct, Escore=seed.score, delta=score-Escore;
   var RC={Green:'#2f7d32',Amber:'#2E7FC4',Red:'#b3261e'};
+  (function(){var W=window.__WHY; if(!W) return;
+    var bandNm= score>=9?'GREEN':score>=8?'LIGHT GREEN':score>=6?'LIGHT AMBER':score>=4?'AMBER':score>=3?'LIGHT RED':'RED';
+    var rows=M.map(function(m){var c=(m.s>=8?'#2f7d32':m.s>=4?'#2E7FC4':'#b3261e');
+      return '<tr><td>'+m.k+'</td><td style="text-align:center">'+m.w.toFixed(1)+'</td><td style="text-align:center;color:'+c+';font-weight:700">'+m.s+'/10</td><td class="mini">'+m.v+'</td></tr>';}).join('');
+    W.overall_brag='<h3>Best-Guess RAG (BRAG)</h3><div class="msub">Weighted composite &middot; '+score+' / 10 &middot; <b>'+bandNm+'</b></div>'
+      +'<p>Identical model to the Evidence RAG (ERAG): seven measures scored 0 to 10, multiplied by a weight, and averaged. <b>The only difference is where percent done originates:</b> here the deliverable completion is the <b>owner self-assessed percent from the Smartsheet 17 Deliverables Tracker (BRAG)</b> (task-weighted average = <b>'+bgComb+'%</b>), not counted Done tasks. Because EV = completion &times; BAC, the SPI, CPI and TCPI measures reflow from the same substitution. Risk and actual cost inputs are identical.</p>'
+      +'<div class="msub">Step 1 &middot; score each measure (0&ndash;10, 10 best)</div>'
+      +'<table><thead><tr><th>Measure</th><th style="text-align:center">Weight</th><th style="text-align:center">Score</th><th>Basis</th></tr></thead><tbody>'+rows+'</tbody></table>'
+      +'<div class="msub">Step 2 &middot; weighted average</div>'
+      +'<div class="formula">&Sigma;(weight &times; score) &divide; 10 = <b>'+wsum.toFixed(1)+' &divide; 10 = '+score+' / 10</b> &rarr; <b>'+bandNm+'</b></div>'
+      +'<p><b>For comparison:</b> the Evidence (task-count) percent done is <b>'+Ecomb+'%</b>, giving ERAG '+Escore+'/10. The gap between the two is where self-assessment runs ahead of task closure.</p>';
+    if(W.overall && W.overall.indexOf('BRAG-NOTE')<0){
+      W.overall+='<p data-x="BRAG-NOTE"><b>For comparison:</b> the Best Guess (BRAG) percent done &mdash; owner self-assessed in the 17 Deliverables Tracker &mdash; is <b>'+bgComb+'%</b> vs the evidence task-count <b>'+Ecomb+'%</b> used here, giving BRAG '+score+'/10 vs ERAG '+Escore+'/10.</p>';
+    }
+  })();
+
   function band(s){s=+s;return s>=9?'GREEN':s>=8?'LIGHT GREEN':s>=6?'LIGHT AMBER':s>=4?'AMBER':s>=3?'LIGHT RED':'RED';}
   var BANDCOL={'GREEN':['#2E8B3D','#fff'],'LIGHT GREEN':['#9CCC65','#245214'],'LIGHT AMBER':['#EAC85C','#5E4600'],'AMBER':['#C0871A','#fff'],'LIGHT RED':['#E8938A','#6E170F'],'RED':['#B83A2A','#fff']};
   function bandTag(s){var nm=band(s),c=BANDCOL[nm];return '<span style="display:inline-block;padding:3px 12px;border-radius:5px;font-weight:700;background:'+c[0]+';color:'+c[1]+'">'+s+'/10 '+nm+'</span>';}
   function bar(pct,col){return '<div style="height:10px;background:var(--bg-surface);border-radius:5px;overflow:hidden"><i style="display:block;height:100%;width:'+pct+'%;background:'+col+'"></i></div>';}
-  var WHYTXT='BRAG (Best Guess RAG) uses the same seven weighted measures as ERAG, but the deliverable completion input is the owner self-assessed percent from the Smartsheet "17 Deliverables Tracker (BRAG)" (task-weighted average) instead of counted Done tasks. Because Earned Value = completion times budget, SPI, CPI, TCPI and EAC reflow from the same substitution. Risk and actual cost inputs are identical to ERAG. These percentages are management judgment, not task evidence; the delta versus ERAG shows where self-assessment runs ahead of task closure.';
-  var _whyN=0;
-  function whyChip(){_whyN++;var id='bragwhy'+_whyN;
-    return {chip:'<span style="display:inline-block;border:1px solid var(--border-lt);border-radius:10px;font-size:9.5px;padding:2px 8px;cursor:pointer;color:var(--text-dim);vertical-align:middle;margin-left:6px" onclick="var x=document.getElementById(\''+id+'\');x.style.display=(x.style.display===\'none\')?\'\':\'none\'">&#9432; WHY?</span>',
-      box:'<div id="'+id+'" style="display:none" class="note">'+WHYTXT+'</div>'};}
+  function whyChip(){return {chip:'<span class="why" data-info="overall_brag">why?</span>',box:''};}
   var STAMP='self-assessed &middot; tracker 16 Jul';
   var DELTA='<div class="note" style="margin-top:8px">BRAG '+score+'/10 vs ERAG '+Escore+'/10 = '+(delta>=0?'+':'')+delta+'. Only the deliverable completion input differs ('+bgComb+'% assessed vs '+Ecomb+'% task-count); risk and cost are identical. '+STAMP+'.</div>';
   function wrapSub(pane,bragHTML){
