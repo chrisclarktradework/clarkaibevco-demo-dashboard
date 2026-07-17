@@ -1118,7 +1118,13 @@ function buildEnh(plan, jira){
     sorted.forEach(function(r){var x=BX(r.due);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);cum+=r.t;lastY=BY(cum/bTotT*100);pp+=' L'+x.toFixed(1)+','+lastY.toFixed(1);});
     pp+=' L'+BX(bEnd).toFixed(1)+','+lastY.toFixed(1);
     bu+='<path d="'+pp+'" fill="none" stroke="#5b6b82" stroke-width="2"/>';
-    bu+='<path d="M'+BX(bStart).toFixed(1)+','+BY(0).toFixed(1)+' L'+BX(today).toFixed(1)+','+BY(actPct).toFixed(1)+'" fill="none" stroke="#2f7d32" stroke-width="2.4"/>';
+    var hist=((window.__CPHIST||[]).map(function(h){return {t:new Date(String(h.date)+'T00:00:00'),p:+h.pct};}).filter(function(h){return !isNaN(h.t.getTime())&&h.t<=today;}));
+    hist.sort(function(a,b){return a.t-b.t;});
+    var apath='M'+BX(bStart).toFixed(1)+','+BY(0).toFixed(1);
+    hist.forEach(function(h){ if(h.t>=bStart) apath+=' L'+BX(h.t).toFixed(1)+','+BY(h.p).toFixed(1); });
+    apath+=' L'+BX(today).toFixed(1)+','+BY(actPct).toFixed(1);
+    bu+='<path d="'+apath+'" fill="none" stroke="#2f7d32" stroke-width="2.4"/>';
+    hist.forEach(function(h){ if(h.t>=bStart&&h.t<today) bu+='<circle cx="'+BX(h.t).toFixed(1)+'" cy="'+BY(h.p).toFixed(1)+'" r="2.3" fill="#2f7d32"/>'; });
     bu+='<circle cx="'+BX(today).toFixed(1)+'" cy="'+BY(actPct).toFixed(1)+'" r="4" fill="#2f7d32"/><text x="'+(BX(today)+7).toFixed(1)+'" y="'+(BY(actPct)+3).toFixed(1)+'" font-size="10" fill="#2f7d32" font-weight="700">'+Math.round(actPct)+'%</text>';
     var fPct=Math.min(100,actPct*db(bStart,GATE)/Math.max(1,db(bStart,today)));
     bu+='<path d="M'+BX(today).toFixed(1)+','+BY(actPct).toFixed(1)+' L'+BX(GATE).toFixed(1)+','+BY(fPct).toFixed(1)+'" fill="none" stroke="#b3261e" stroke-width="2" stroke-dasharray="6,4"/>';
@@ -1209,6 +1215,7 @@ window.__SOW={p0:"<p class=\"sowp\">This Statement of Work (“SOW”) # 6 is ma
 window.__SOWLABELS={p0:'Executed SOW',p1:'Positronic Proposed Next-Phase SOW'};
 window.__SOWMETA={p0:'Fully executed &middot; Positronic Partners LLC &middot; demonstration data (fictitious)',p1:'Proposal &middot; not executed &middot; demonstration data (fictitious)'};
 window.__CRITGATE='2026-08-12';window.__CRITGATELABEL='Stage 3 Gate';
+window.__CPHIST=[{"date": "2026-03-01", "pct": 0.0}, {"date": "2026-03-16", "pct": 4.5}, {"date": "2026-03-31", "pct": 10.0}, {"date": "2026-04-15", "pct": 15.9}, {"date": "2026-04-30", "pct": 22.2}, {"date": "2026-05-16", "pct": 28.6}, {"date": "2026-05-31", "pct": 35.3}, {"date": "2026-06-15", "pct": 42.2}, {"date": "2026-06-30", "pct": 49.2}, {"date": "2026-07-16", "pct": 56.3}];
 window.__ASOF="2026-07-16"; render(D_BILL,D_RISKS,D_PLAN,D_JIRA);
 (function(){var mb=document.getElementById('modebanner'); if(mb){mb.className='modebar snap';mb.innerHTML='&#9679; DEMONSTRATION DATA &middot; ClarkAI Beverage Co &middot; fictitious &middot; 2026-07-16';}})();
 
