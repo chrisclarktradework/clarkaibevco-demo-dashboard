@@ -530,7 +530,7 @@ function render(bill, risks, plan, jira){
 
  /* ===== RENDER ===== */
  $("#ragPill").innerHTML=`<span class="pill ${overallCls}"><span class="dot"></span>PROJECT: ${overall.toUpperCase()}</span>${why('overall')}`;
- const TABS=[["overview","Overview"],["weekly","Weekly"],["status","Project Status & RAG"],["tasks","Tasks & Completion"],["risks","Risk Register"],["budgetdash","Budget"],["budget","EVM"],["deliverables","Deliverables"],["critpath","Critical Path"],["kpis","KPIs"],["release","Release Mgmt"],["ocm","OCM"],["pulse","Team Pulse"],["sow","SOW"]];
+ const TABS=[["overview","Overview"],["askspy","Ask Spyglass"],["weekly","Weekly"],["status","Project Status & RAG"],["tasks","Tasks & Completion"],["risks","Risk Register"],["budgetdash","Budget"],["budget","EVM"],["deliverables","Deliverables"],["critpath","Critical Path"],["kpis","KPIs"],["release","Release Mgmt"],["ocm","OCM"],["pulse","Team Pulse"],["sow","SOW"]];
  $("#tabs").innerHTML=TABS.map((t,i)=>`<button data-t="${t[0]}" class="${i?'':'active'}">${t[1]}</button>`).join("");
  $("#main").innerHTML=TABS.map(t=>`<section class="pane" id="x-${t[0]}"></section>`).join("");
  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#tabs button").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".pane").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("#x-"+b.dataset.t).classList.add("active");});
@@ -1035,6 +1035,8 @@ function buildEnh(plan, jira){
   var day=86400000;
   var GATE=new Date((window.__CRITGATE||'2026-07-28')+'T00:00:00');
   var GLABEL=window.__CRITGATELABEL||'P0-SG1';
+  var GATE2=window.__CRITGATE2?new Date(window.__CRITGATE2+'T00:00:00'):null;
+  var GLABEL2=window.__CRITGATELABEL2||'P0-SG2';
   var today=(window.__ASOF?new Date(window.__ASOF+'T00:00:00'):new Date());
   function db(a,b){return Math.round((b-a)/day);}
   function iso(dt){return dt.getFullYear()+'-'+('0'+(dt.getMonth()+1)).slice(-2)+'-'+('0'+dt.getDate()).slice(-2);}
@@ -1078,7 +1080,7 @@ function buildEnh(plan, jira){
   // ----- Visual 2: gantt, all deliverables, critical highlighted -----
   var dues=rows.filter(function(r){return r.due;}).map(function(r){return r.due.getTime();});
   var lo=Math.min.apply(null,dues.concat([today.getTime()-14*day]));
-  var hi=Math.max.apply(null,dues.concat([GATE.getTime(),today.getTime()+7*day]));
+  var hi=Math.max.apply(null,dues.concat([GATE.getTime(),today.getTime()+7*day]).concat(GATE2?[GATE2.getTime()+2*day]:[]));
   var axisStart=new Date(lo), axisEnd=new Date(hi); var span=Math.max(1,db(axisStart,axisEnd));
   var W=920,rowH=25,padL=52,padR=56,topP=26,H=topP+rows.length*rowH+34;
   function X(dt){return padL+db(axisStart,dt)/span*(W-padL-padR);}
@@ -1095,6 +1097,7 @@ function buildEnh(plan, jira){
       +'<text x="'+(x1+6).toFixed(1)+'" y="'+(y+11)+'" font-size="9" fill="var(--text-dim)">'+r.pct+'%</text>';});
   var xt=X(today); g+='<line x1="'+xt.toFixed(1)+'" y1="'+topP+'" x2="'+xt.toFixed(1)+'" y2="'+(H-22)+'" stroke="#1E6FE0" stroke-width="1.5" stroke-dasharray="3,2"/><text x="'+xt.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#1E6FE0" text-anchor="middle">today</text>';
   var xg=X(GATE); g+='<line x1="'+xg.toFixed(1)+'" y1="'+topP+'" x2="'+xg.toFixed(1)+'" y2="'+(H-22)+'" stroke="#C0392B" stroke-width="1.5"/><text x="'+xg.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#C0392B" text-anchor="middle">'+GLABEL+'</text>';
+  if(GATE2){var xh=X(GATE2); g+='<line x1="'+xh.toFixed(1)+'" y1="'+topP+'" x2="'+xh.toFixed(1)+'" y2="'+(H-22)+'" stroke="#7a1f14" stroke-width="1.5" stroke-dasharray="5,3"/><text x="'+xh.toFixed(1)+'" y="'+(topP-4)+'" font-size="9" fill="#7a1f14" text-anchor="middle">'+GLABEL2+'</text>';}
   g+='</svg>';
   // ----- Visual: burn-up line (planned vs actual vs forecast) -----
   var bTotT=0,bTotD=0; rows.forEach(function(r){bTotT+=r.t;bTotD+=r.dn;});
@@ -1105,7 +1108,7 @@ function buildEnh(plan, jira){
   if(bsc.length){
     var dd2=bsc.map(function(r){return r.due.getTime();});
     var bStart=new Date(Math.min.apply(null,dd2)-7*day);
-    var bEnd=new Date(Math.max.apply(null,dd2.concat([GATE.getTime(),today.getTime()])));
+    var bEnd=new Date(Math.max.apply(null,dd2.concat([GATE.getTime(),today.getTime()]).concat(GATE2?[GATE2.getTime()]:[])));
     var bSpan=Math.max(1,db(bStart,bEnd));
     var BW=920,BH=220,bpL=42,bpR=54,bpT=16,bpB=28,plotW=BW-bpL-bpR,plotH=BH-bpT-bpB;
     var BX=function(dt){return bpL+db(bStart,dt)/bSpan*plotW;};
@@ -1131,6 +1134,7 @@ function buildEnh(plan, jira){
     bu+='<circle cx="'+BX(GATE).toFixed(1)+'" cy="'+BY(fPct).toFixed(1)+'" r="3.5" fill="#b3261e"/>';
     bu+='<line x1="'+BX(today).toFixed(1)+'" y1="'+bpT+'" x2="'+BX(today).toFixed(1)+'" y2="'+(BH-bpB)+'" stroke="#1E6FE0" stroke-width="1.2" stroke-dasharray="3,2"/><text x="'+BX(today).toFixed(1)+'" y="'+(bpT-4)+'" font-size="9" fill="#1E6FE0" text-anchor="middle">today</text>';
     bu+='<line x1="'+BX(GATE).toFixed(1)+'" y1="'+bpT+'" x2="'+BX(GATE).toFixed(1)+'" y2="'+(BH-bpB)+'" stroke="#C0392B" stroke-width="1.4"/><text x="'+BX(GATE).toFixed(1)+'" y="'+(bpT-4)+'" font-size="9" fill="#C0392B" text-anchor="middle">'+GLABEL+'</text>';
+    if(GATE2){bu+='<line x1="'+BX(GATE2).toFixed(1)+'" y1="'+bpT+'" x2="'+BX(GATE2).toFixed(1)+'" y2="'+(BH-bpB)+'" stroke="#7a1f14" stroke-width="1.3" stroke-dasharray="5,3"/><text x="'+BX(GATE2).toFixed(1)+'" y="'+(bpT-4)+'" font-size="9" fill="#7a1f14" text-anchor="middle">'+GLABEL2+'</text>';}
     bu+='</svg>';
     bu='<div style="display:flex;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text-dim);margin-bottom:4px">'
       +'<span><span style="display:inline-block;width:14px;height:2px;background:#5b6b82;vertical-align:middle"></span> Planned</span>'
@@ -1340,6 +1344,156 @@ function buildEnh(plan, jira){
  };
  window.__bragify();
 
+window.__ASKQA=[{"g": "Status and RAG", "q": "What is the overall program status?", "a": "The program is <b>Green</b> at <b>month 9 of 18</b>, halfway through the Robot Fuel Platform rollout. Combined task completion is ahead of the 50% plan line, viscosity inventory accuracy is holding at <b>99.6%</b> and the finance close is already <b>42%</b> faster. SPI and CPI are both above <b>1.0</b>.", "conf": "HIGH", "src": "Project Status and RAG tab &middot; supply chain control tower", "links": [["Status and RAG", "status"]]}, {"g": "Status and RAG", "q": "What is the difference between BRAG and ERAG?", "a": "The <b>ERAG</b> (Evidence RAG) is computed only from evidence: task completion, the EVM indices and the open risk load. The <b>BGRAG</b> (Best Guess RAG) blends in the Positronic Partners delivery lead's manual percent complete per deliverable. ERAG counts a task only when it is Done, so the BGRAG usually reads a little ahead of it mid-stage.", "conf": "MEDIUM", "src": "Status and RAG tab &middot; deliverables tracker", "links": [["Status and RAG", "status"], ["Deliverables", "deliverables"]]}, {"g": "Status and RAG", "q": "How is the dashboard fed?", "a": "This is a demonstration build with static fictitious data, so every number is baked in. In a production deployment the nightly build pulls Jira and the Smartsheet PMO logs and re-bakes the tabs the same way, so nothing is ever typed in by hand.", "conf": "MEDIUM", "src": "Demonstration build pipeline", "links": [["Status and RAG", "status"]]}, {"g": "Risks", "q": "What are the top risks right now?", "a": "<b>1.</b> Cream supply volatility at the Riverside plant, the single feed for the creme SKUs. <b>2.</b> Cyberdyne Systems WMS interface stability during the upgrade window. <b>3.</b> Operator adoption across the 14 bottling nodes as the line dashboards replace paper. Each carries a named android owner and a mitigation on the register.", "conf": "MEDIUM", "src": "Risk Register tab", "links": [["Risk Register", "risks"]]}, {"g": "Risks", "q": "How many red risks are open?", "a": "<b>0 Red</b> and <b>0 Amber</b> risks are open out of 16 on the register. Risk carries the heaviest weight in the ERAG model, so Red risks pull the composite score down fastest.", "conf": "HIGH", "src": "Risk Register tab", "links": [["Risk Register", "risks"], ["Status and RAG", "status"]]}, {"g": "Budget and EVM", "q": "Where do we stand on budget?", "a": "The program is fixed price at <b>$233,333 per month</b> against a <b>$4.2M</b> envelope over 18 months. At month 9 the planned spend line sits at <b>$2.1M</b> and the program is running at that line, so cash is on plan.", "conf": "HIGH", "src": "Budget tab &middot; billings log", "links": [["Budget", "budgetdash"], ["EVM", "budget"]]}, {"g": "Budget and EVM", "q": "What is the EVM position?", "a": "The program is ahead of its planned completion curve at the 9 month mark with <b>SPI above 1.0</b> and <b>CPI above 1.0</b>. Earned value is running ahead of both the schedule line and the effort spent, which is the healthiest quadrant of the EVM chart.", "conf": "MEDIUM", "src": "EVM tab", "links": [["EVM", "budget"]]}, {"g": "Deliverables and Gates", "q": "What are the stage gates?", "a": "Six stages of three months each. The next gate is the <b>Stage 3 Gate on 12 Aug 2026</b>, the D12 acceptance review, which releases build wave 2 and the remaining bottling-node rollout. The final gate lands with go-live in months 16 to 18.", "conf": "MEDIUM", "src": "Deliverables tab &middot; stage plan", "links": [["Deliverables", "deliverables"], ["Critical Path", "critpath"]]}, {"g": "Deliverables and Gates", "q": "Which deliverables are behind?", "a": "None are behind. <b>7</b> deliverables are in flight toward the Stage 3 Gate: <b>D9b</b>, <b>D11</b>, <b>D12</b>, <b>D13</b>, <b>D14</b>, <b>D15</b>, <b>D16</b>. Everything earlier in the plan is Done and accepted.", "conf": "HIGH", "src": "Deliverables tab &middot; tracker", "links": [["Deliverables", "deliverables"]]}, {"g": "Deliverables and Gates", "q": "Who owns what?", "a": "Top owners by deliverable count: <b>Data</b> (2), <b>Metal Men: Gold</b> (1), <b>HAL 9000</b> (1), <b>J.A.R.V.I.S.</b> (1), <b>Metal Men: Mercury</b> (1). The Deliverables tab lists every deliverable with its named android owner and finish date.", "conf": "HIGH", "src": "Deliverables tab", "links": [["Deliverables", "deliverables"]]}, {"g": "Quick Wins", "q": "Summarize the quick wins", "a": "<b>4</b> quick wins are on the log: <b>WS1</b> viscosity sync agent Phase 2 and auto-reconciliation on high-volume tank transfers. <b>WS2</b> recipe master-data cleanup for high-exception Robot Fuel SKUs. <b>WS5</b> month-end close exception automation, already live and saving days. <b>WS6</b> 14-node bottling scorecards feeding the live line dashboards. The month-end close automation is already live and saving days each cycle.", "conf": "HIGH", "src": "Quick wins backlog (D9a)", "links": [["Tasks and Completion", "tasks"]]}, {"g": "Release", "q": "When is the next release wave?", "a": "Build wave 2 runs in <b>Stage 4, months 10 to 12</b>, right after the Stage 3 Gate on 12 Aug. It completes the bottling-node rollout, then Stage 5 covers integration test and cutover prep and Stage 6 delivers go-live in months 16 to 18.", "conf": "MEDIUM", "src": "Release Mgmt tab &middot; stage plan", "links": [["Release Mgmt", "release"], ["Critical Path", "critpath"]]}, {"g": "Release", "q": "What is the cream position?", "a": "Confirmed physical cover at the <b>Riverside plant is 3 days</b> at current draw. The Cyberdyne WMS stopped posting cream receipts to Oracle Fusion overnight, so the control tower is running on last-known-good sync. Open the CRITICAL ALERTS window for the reroute recommendation.", "conf": "HIGH", "src": "Supply chain control tower &middot; Riverside plant telemetry", "links": [["Risk Register", "risks"]]}, {"g": "Release", "q": "Who is the WMS vendor?", "a": "<b>Cyberdyne Systems</b> supplies the WMS. Positronic Partners integrates it with Oracle Fusion through the viscosity sync agent, which is holding <b>99.6%</b> inventory accuracy across the 14 bottling nodes.", "conf": "MEDIUM", "src": "Integration map (D4a)", "links": [["Status and RAG", "status"]]}];window.__ASKMETA={"asof": "2026-07-16", "demoOnly": true, "livetip": "Demo environment", "critical": "<div style=\"display:grid;gap:8px\"><div><b style=\"color:#b3261e\">SC-014 &middot; Cream inventory sync failure &middot; Riverside plant</b><br>The Cyberdyne WMS stopped posting cream receipts to Oracle Fusion at 03:40, so the control tower is blind on roughly <b>18,000 gallons</b> of cream position at Riverside. Confirmed physical cover is <b>3 days</b> at current draw.</div><div><b style=\"color:#b3261e\">Recommended action</b><br>Reroute two inbound cream loads from the Lakeside tank farm to Riverside within 24 hours and hold the creme line changeover until the sync backlog clears. The viscosity sync agent replays the missed postings once Cyberdyne restores the interface.</div><div><b style=\"color:#b3261e\">Watch</b><br>If cover falls under 2 days the Stage 3 Gate demonstration slips and OTIF on the creme SKUs is exposed. Escalate to Positronic Partners command if the interface is not back by 18:00.</div></div>"};
+/* ---- Ask Spyglass tab (additive) ---- */
+ (function(){
+  var host=document.getElementById('x-askspy'); if(!host) return;
+  if(host.getAttribute('data-askspy')==='1') return; host.setAttribute('data-askspy','1');
+  var QA=window.__ASKQA||[]; var META=window.__ASKMETA||{};
+  var MODE='demo';
+  var liveOk=!META.demoOnly&&(/\.azurestaticapps\.net$/.test(location.hostname)||location.hostname==='steerco.demo.invalid');
+  var liveTip=META.livetip||'Live mode runs on the deployed dashboard';
+  if(!document.getElementById('askspycss')){
+   var st=document.createElement('style'); st.id='askspycss';
+   st.textContent='@keyframes askPulse{0%{opacity:1}50%{opacity:.25}100%{opacity:1}}'
+    +'#x-askspy .askmsg{max-width:88%;padding:11px 14px;border-radius:8px;font-size:12px;line-height:1.55}'
+    +'#x-askspy .askmsg.q{align-self:flex-end;background:var(--bg-surface);border:1px solid var(--border-lt);border-radius:8px 8px 2px 8px;font-weight:600;color:var(--cream)}'
+    +'#x-askspy .askmsg.a{align-self:flex-start;background:var(--bg-panel);border:1px solid var(--border-lt);border-left:3px solid var(--gold);border-radius:8px 8px 8px 2px}'
+    +'#x-askspy .askmsg.a b{color:var(--gold-br)}'
+    +'#x-askspy .askhead{font-size:9px;letter-spacing:.2em;color:var(--gold-br);font-weight:700;margin-bottom:7px;display:flex;gap:10px;align-items:center}'
+    +'#x-askspy .askhead .conf{margin-left:auto;color:var(--text-dim);letter-spacing:.1em;white-space:nowrap}'
+    +'#x-askspy .askmsg.a.crit{border-left-color:#b3261e}'
+    +'#x-askspy .askmsg.a.crit .askhead{color:#b3261e}'
+    +'#x-askspy .askmsg.a.crit .askhead .conf{color:#b3261e}'
+    +'#x-askspy .askdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#b3261e;animation:askPulse 1.1s infinite}'
+    +'#x-askspy .asksrc{margin-top:8px;padding-top:7px;border-top:1px dashed var(--border-lt);font-size:10px;color:var(--text-dim)}'
+    +'#x-askspy .asklinks{margin-top:7px;display:flex;gap:6px;flex-wrap:wrap}'
+    +'#x-askspy .asklinks button{cursor:pointer;border:1px solid var(--gold);background:transparent;color:var(--gold-br);font:600 10px system-ui,sans-serif;padding:4px 10px;border-radius:12px;letter-spacing:.04em}'
+    +'#x-askspy .asklinks button:hover{background:var(--bg-surface)}'
+    +'#x-askspy .askchip{cursor:pointer;border:1px dashed var(--border-lt);background:transparent;color:var(--text-dim);font:500 10.5px system-ui,sans-serif;padding:5px 11px;border-radius:16px;margin:0 6px 6px 0;letter-spacing:.04em}'
+    +'#x-askspy .askchip:hover{border-color:var(--gold);color:var(--gold-br)}'
+    +'#x-askspy .asktype span{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--text-dim);margin-right:3px;animation:askPulse 1s infinite}'
+    +'#x-askspy .asktype span:nth-child(2){animation-delay:.2s}'
+    +'#x-askspy .asktype span:nth-child(3){animation-delay:.4s}';
+   (document.head||document.documentElement).appendChild(st);
+  }
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  var groups=[]; var gmap={};
+  QA.forEach(function(e,i){ var g=e.g||'General'; if(!gmap[g]){ gmap[g]={name:g,items:[]}; groups.push(gmap[g]); } gmap[g].items.push(i); });
+  function chipsHtml(){
+   if(!QA.length) return '<div class="note">Canned answers bake in with the next build.</div>';
+   return groups.map(function(g){
+    return '<div style="margin-top:9px"><div style="font-size:9px;letter-spacing:.14em;color:var(--text-dim);text-transform:uppercase;font-weight:700;margin-bottom:5px">'+esc(g.name)+'</div>'
+     +g.items.map(function(i){ return '<button class="askchip" data-askchip="'+i+'">'+esc(QA[i].q)+'</button>'; }).join('')+'</div>';
+   }).join('');
+  }
+  function modeHtml(){
+   var base='padding:4px 13px;border-radius:14px;font:700 10px system-ui,sans-serif;letter-spacing:.08em;';
+   var on=base+'cursor:pointer;background:var(--gold);color:#fff;border:1px solid var(--gold-br)';
+   var off=base+'cursor:pointer;background:transparent;color:var(--text-dim);border:1px solid var(--border-lt)';
+   var dis=base+'cursor:not-allowed;opacity:.5;background:transparent;color:var(--text-dim);border:1px dashed var(--border-lt)';
+   return '<span id="askModeDemo" style="'+(MODE==='demo'?on:off)+'">DEMO</span>'
+    +'<span id="askModeLive" title="'+esc(liveOk?'Answers come from the /api/ask endpoint on this deployment':liveTip)+'" style="'+(liveOk?(MODE==='live'?on:off):dis)+'">LIVE</span>'
+    +'<span class="note" style="margin:0">'+(MODE==='live'?'Live answers come from the /api/ask Azure Function.':'Demo answers were baked from the dashboard data at build time.')+'</span>';
+  }
+  host.innerHTML=
+   '<div class="panel">'
+   +'<div style="display:flex;align-items:center;gap:10px">'
+   +'<span style="color:var(--gold);font-size:20px;line-height:1">&#x25C6;</span>'
+   +'<h2 style="margin:0;letter-spacing:.14em">ASK SPYGLASS</h2>'
+   +'</div>'
+   +'<div class="sub">Conversational program intelligence &middot; demo preview &middot; answers generated from the live dashboard data at build time</div>'
+   +'<div id="askModeRow" style="display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap">'+modeHtml()+'</div>'
+   +'</div>'
+   +'<div class="panel" style="margin-top:12px"><h2>Suggested questions</h2><div class="sub">Click a chip or type your own question below</div>'+chipsHtml()+'</div>'
+   +'<div class="panel" style="margin-top:12px">'
+   +'<div id="askThread" style="min-height:320px;max-height:540px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:4px 2px"></div>'
+   +'<div style="display:flex;gap:8px;margin-top:12px;align-items:center">'
+   +'<input id="askInput" type="text" placeholder="Ask about status, risks, budget, deliverables, gates or releases..." style="flex:1;border:1px solid var(--border-lt);border-radius:8px;background:var(--bg-panel);color:var(--cream);padding:9px 12px;font:12.5px system-ui,sans-serif;outline:none">'
+   +'<button id="askGo" style="cursor:pointer;border:1px solid var(--gold-br);background:var(--gold);color:#fff;font:700 11px system-ui,sans-serif;letter-spacing:.08em;padding:9px 18px;border-radius:8px">ASK</button>'
+   +'<button id="askCrit" style="cursor:pointer;border:1px solid #b3261e;background:#b3261e;color:#fff;font:700 11px system-ui,sans-serif;letter-spacing:.06em;padding:9px 14px;border-radius:8px;white-space:nowrap">&#9650; CRITICAL ALERTS</button>'
+   +'</div>'
+   +'<div class="note" style="margin-top:8px">Demo preview &middot; answers are canned at build time from the same data as the tabs'+(META.asof?(' &middot; as of '+esc(META.asof)):'')+'</div>'
+   +'</div>';
+  var thread=document.getElementById('askThread');
+  function bub(h){ var d=document.createElement('div'); d.innerHTML=h; var el=d.firstChild; thread.appendChild(el); thread.scrollTop=thread.scrollHeight; return el; }
+  function qBub(q){ bub('<div class="askmsg q">'+esc(q)+'</div>'); }
+  function typing(){ return bub('<div class="askmsg a asktype"><span></span><span></span><span></span></div>'); }
+  function kill(el){ if(el&&el.parentNode) el.parentNode.removeChild(el); }
+  function linksHtml(links){
+   if(!links||!links.length) return '';
+   return '<div class="asklinks">'+links.map(function(l){ return '<button data-askgo="'+esc(l[1])+'">'+esc(l[0])+' &rarr;</button>'; }).join('')+'</div>';
+  }
+  function aBub(o){
+   var head=o.crit?('<span class="askdot"></span><span>CRITICAL ALERTS</span>'):'<span>&#x25C6; SPYGLASS AI</span>';
+   bub('<div class="askmsg a'+(o.crit?' crit':'')+'"><div class="askhead">'+head+'<span class="conf">'+(o.badge||'')+'</span></div>'
+    +(o.html||'')
+    +(o.src?('<div class="asksrc">Sources: '+o.src+'</div>'):'')
+    +linksHtml(o.links)+'</div>');
+  }
+  function norm(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim(); }
+  function words(s){ return norm(s).split(' ').filter(function(w){ return w.length>3; }); }
+  function scoreOf(e,q){
+   var nq=norm(q), ne=norm(e.q);
+   var have={}; words(e.q).forEach(function(w){ have[w]=1; });
+   var s=0, seen={};
+   words(q).forEach(function(w){ if(have[w]&&!seen[w]){ s++; seen[w]=1; } });
+   if(nq&&ne&&(ne.indexOf(nq)>=0||nq.indexOf(ne)>=0)) s+=3;
+   return s;
+  }
+  function rank(q){ return QA.map(function(e,i){ return {i:i,s:scoreOf(e,q)}; }).sort(function(a,b){ return b.s-a.s; }); }
+  function demoAnswer(q,note){
+   var t=typing();
+   setTimeout(function(){
+    kill(t);
+    if(note) bub('<div class="note" style="align-self:flex-start;margin:0">'+esc(note)+'</div>');
+    var r=rank(q);
+    if(r.length&&r[0].s>=2){
+     var e=QA[r[0].i];
+     aBub({badge:'CONFIDENCE '+esc(e.conf||'HIGH'),html:e.a,src:e.src,links:e.links});
+    }else{
+     var near=r.slice(0,3).filter(function(x){ return QA[x.i]; }).map(function(x){ return '<li>'+esc(QA[x.i].q)+'</li>'; }).join('');
+     aBub({badge:'DEMO PREVIEW',html:'I do not have a baked answer for that yet in this preview. The closest questions I can answer are:<ul style="margin:6px 0 0 16px;padding:0">'+near+'</ul>Try one of the suggested chips above.',src:'Demo matcher',links:[]});
+    }
+   },450);
+  }
+  function liveAnswer(q){
+   var t=typing();
+   fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({q:q})})
+    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(j){ kill(t); aBub({badge:'LIVE &middot; AZURE OPENAI',html:j.answer||'',src:j.model?('Azure OpenAI &middot; '+esc(j.model)):'Azure OpenAI',links:[]}); })
+    .catch(function(){ kill(t); demoAnswer(q,'Live mode unavailable, falling back to demo'); });
+  }
+  function submit(q){ qBub(q); if(MODE==='live'&&liveOk) liveAnswer(q); else demoAnswer(q); }
+  function critAlerts(){
+   qBub('Show the critical alerts');
+   var t=typing();
+   setTimeout(function(){
+    kill(t);
+    aBub({crit:true,badge:'IMMEDIATE ATTENTION',
+     html:META.critical||'<b>No critical alerts.</b> Nothing on the register is flagged critical in this build.',
+     src:'Risk Register &middot; flagged program risks',links:[['Risk Register','risks']]});
+   },450);
+  }
+  function paintMode(){ var row=document.getElementById('askModeRow'); if(row) row.innerHTML=modeHtml(); }
+  host.addEventListener('click',function(ev){
+   var c=ev.target.closest?ev.target.closest('[data-askchip]'):null;
+   if(c){ var e=QA[parseInt(c.getAttribute('data-askchip'),10)]; if(e) submit(e.q); return; }
+   var g=ev.target.closest?ev.target.closest('[data-askgo]'):null;
+   if(g){ var tb=document.querySelector('#tabs button[data-t="'+g.getAttribute('data-askgo')+'"]'); if(tb) tb.click(); return; }
+   var id=(ev.target&&ev.target.id)||'';
+   if(id==='askGo'){ var inp=document.getElementById('askInput'); var q=((inp&&inp.value)||'').trim(); if(q){ inp.value=''; submit(q); } return; }
+   if(id==='askCrit'){ critAlerts(); return; }
+   if(id==='askModeDemo'){ MODE='demo'; paintMode(); return; }
+   if(id==='askModeLive'&&liveOk){ MODE='live'; paintMode(); return; }
+  });
+  host.addEventListener('keydown',function(ev){
+   if(ev.key==='Enter'&&ev.target&&ev.target.id==='askInput'){ var q=(ev.target.value||'').trim(); if(q){ ev.target.value=''; submit(q); } }
+  });
+  aBub({badge:(META.asof?('AS OF '+esc(META.asof)):'DEMO PREVIEW'),
+   html:'Ask me about program status, risks, budget and EVM, deliverables and stage gates, quick wins or the release plan. Click a suggested question or type your own.',
+   src:'', links:[]});
+ })();
  /* ---- one delegated handler for sub-tabs + expanders ---- */
  if(!window.__ENH_CLICK){ window.__ENH_CLICK=1;
   document.addEventListener('click', function(e){
